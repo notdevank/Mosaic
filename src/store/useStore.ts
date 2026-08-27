@@ -762,12 +762,16 @@ export const useStore = create<State>()(
     {
       name: 'mosaic-lifeos-store',
       storage: createJSONStorage(() => mosaicSQLiteStorage),
-      version: 4,
+      version: 5,
       migrate: (persistedState: any, version: number) => {
         const state = persistedState || {};
-        const areas = state.areas || initialAreas;
+        let areas = state.areas || initialAreas;
         const today = getTodayStr();
         
+        // Remove deprecated area IDs from persisted store
+        const deprecatedAreaIds = ['coding', 'personality', 'career', 'finance', 'reading', 'creative', 'wellness', 'productivity'];
+        areas = areas.filter((a: any) => !deprecatedAreaIds.includes(a.id));
+
         // Ensure nutrition area exists in stored areas
         if (!areas.some((a: any) => a.id === 'nutrition')) {
           const nutritionArea = { 

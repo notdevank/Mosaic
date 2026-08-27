@@ -196,15 +196,28 @@ class GoogleDriveSyncService {
         parents: existingFileId ? undefined : ['appDataFolder']
       };
 
+      const boundary = '-------314159265358979323846';
+      const delimiter = `\r\n--${boundary}\r\n`;
+      const close_delim = `\r\n--${boundary}--`;
+
+      const multipartRequestBody =
+        delimiter +
+        'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+        JSON.stringify(metadata) +
+        delimiter +
+        'Content-Type: application/json\r\n\r\n' +
+        fileContent +
+        close_delim;
+
       if (existingFileId) {
-        const updateUrl = `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=media`;
+        const updateUrl = `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=multipart`;
         const res = await fetch(updateUrl, {
           method: 'PATCH',
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json'
+            'Content-Type': `multipart/related; boundary="${boundary}"`
           },
-          body: fileContent
+          body: multipartRequestBody
         });
 
         if (res.status === 401) {
@@ -213,7 +226,8 @@ class GoogleDriveSyncService {
         }
 
         if (!res.ok) {
-          throw new Error(`Google Drive API error: ${res.status} ${res.statusText}`);
+          const errText = await res.text();
+          throw new Error(`Google Drive API error (${res.status}): ${errText}`);
         }
 
         return {
@@ -222,15 +236,14 @@ class GoogleDriveSyncService {
           lastSyncedAt: new Date().toISOString()
         };
       } else {
-        const form = new FormData();
-        form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-        form.append('file', new Blob([fileContent], { type: 'application/json' }));
-
         const createUrl = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
         const res = await fetch(createUrl, {
           method: 'POST',
-          headers: { Authorization: `Bearer ${accessToken}` },
-          body: form
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': `multipart/related; boundary="${boundary}"`
+          },
+          body: multipartRequestBody
         });
 
         if (res.status === 401) {
@@ -239,7 +252,8 @@ class GoogleDriveSyncService {
         }
 
         if (!res.ok) {
-          throw new Error(`Google Drive API upload error: ${res.status} ${res.statusText}`);
+          const errText = await res.text();
+          throw new Error(`Google Drive API upload error (${res.status}): ${errText}`);
         }
 
         const data = await res.json();

@@ -719,30 +719,45 @@ export const useStore = create<State>()(
       })),
 
       // Reset & Backup
-      resetToSeedData: () => set({
-        currentView: 'home',
-        selectedCustomAreaId: undefined,
-        userSettings: initialUserSettings,
-        areas: initialAreas,
-        tasks: initialTasks,
-        events: initialEvents,
-        habits: initialHabits,
-        goals: initialGoals,
-        projects: initialProjects,
-        activities: initialActivities,
-        dailyLogs: initialDailyLogs,
-        courses: initialCourses,
-        assignments: initialAssignments,
-        exams: initialExams,
-        exercises: initialExercises,
-        workoutPlans: initialWorkoutPlans,
-        workoutLogs: initialWorkoutLogs,
-        people: initialPeople,
-        mealLogs: initialMealLogs,
-        nutritionGoal: initialNutritionGoal,
-        inbox: [],
-        reviews: []
-      }),
+      resetToSeedData: () => {
+        const seedState = {
+          currentView: 'home' as const,
+          selectedCustomAreaId: undefined,
+          userSettings: { ...initialUserSettings, hasCompletedTutorial: false },
+          areas: initialAreas,
+          tasks: initialTasks,
+          events: initialEvents,
+          habits: initialHabits,
+          goals: initialGoals,
+          projects: initialProjects,
+          activities: initialActivities,
+          dailyLogs: initialDailyLogs,
+          courses: initialCourses,
+          assignments: initialAssignments,
+          exams: initialExams,
+          exercises: initialExercises,
+          workoutPlans: initialWorkoutPlans,
+          workoutLogs: initialWorkoutLogs,
+          people: initialPeople,
+          mealLogs: initialMealLogs,
+          nutritionGoal: initialNutritionGoal,
+          inbox: [],
+          reviews: []
+        };
+
+        set(seedState);
+
+        try {
+          localStorage.clear();
+          sessionStorage.clear();
+          localStorage.setItem('mosaic-lifeos-store', JSON.stringify({
+            state: seedState,
+            version: 5
+          }));
+        } catch (e) {
+          console.error('[Store] Failed to write seed state to storage:', e);
+        }
+      },
 
       importDataJSON: (jsonStr: string) => {
         try {

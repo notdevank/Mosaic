@@ -252,24 +252,32 @@ export const SettingsView: React.FC = () => {
   };
 
   const handleWipeDatabase = async () => {
-    if (confirm('Are you sure you want to completely RESET your local database and start fresh? All data will be cleared.')) {
-      try {
-        resetToSeedData();
-        localStorage.clear();
-        sessionStorage.clear();
+    const isConfirmed = window.confirm('Are you sure you want to completely RESET your local database and start fresh? All tasks, logs, and settings will be wiped.');
+    if (!isConfirmed) return;
 
-        if (window.indexedDB && window.indexedDB.databases) {
+    try {
+      // 1. Reset Zustand store and force-overwrite localStorage with fresh seed state
+      resetToSeedData();
+
+      // 2. Wipe IndexedDB databases if present
+      if (window.indexedDB && window.indexedDB.databases) {
+        try {
           const dbs = await window.indexedDB.databases();
-          dbs.forEach(db => {
+          for (const db of dbs) {
             if (db.name) window.indexedDB.deleteDatabase(db.name);
-          });
+          }
+        } catch (err) {
+          console.warn('[Settings] IndexedDB cleanup warning:', err);
         }
-      } catch (e) {
-        console.error('Wipe failed:', e);
       }
-
-      window.location.reload();
+    } catch (e) {
+      console.error('[Settings] Wipe database error:', e);
     }
+
+    // 3. Force clean reload to mount fresh seed state
+    setTimeout(() => {
+      window.location.href = window.location.pathname;
+    }, 150);
   };
 
   return (

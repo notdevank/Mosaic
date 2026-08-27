@@ -746,9 +746,10 @@ export const useStore = create<State>()(
         try {
           const parsed = JSON.parse(jsonStr);
           if (parsed && typeof parsed === 'object') {
+            const dataToMerge = parsed.state || parsed;
             set((state) => ({
               ...state,
-              ...parsed
+              ...dataToMerge
             }));
             return true;
           }

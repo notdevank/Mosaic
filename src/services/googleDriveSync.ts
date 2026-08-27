@@ -5,6 +5,8 @@
  * mosaic-lifeos-db.json securely in the user's private Google Drive appDataFolder.
  */
 
+import { useStore } from '../store/useStore';
+
 export interface GoogleDriveUser {
   email?: string;
   name?: string;
@@ -118,20 +120,36 @@ export class GoogleDriveSyncService {
     return null;
   }
 
-  // Find file ID in Google Drive AppData folder
+  // Find file ID in Google Drive AppData folder or Drive Root
   private async findBackupFileId(accessToken: string): Promise<string | null> {
     try {
-      const query = encodeURIComponent(`name = '${GDRIVE_FILENAME}' and 'appDataFolder' in parents and trashed = false`);
-      const url = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${query}&fields=files(id,name,modifiedTime)`;
+      // 1. Search appDataFolder
+      const queryAppData = encodeURIComponent(`name = '${GDRIVE_FILENAME}' and 'appDataFolder' in parents and trashed = false`);
+      const urlAppData = `https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=${queryAppData}&fields=files(id,name,modifiedTime)`;
       
-      const res = await fetch(url, {
+      const res1 = await fetch(urlAppData, {
         headers: { Authorization: `Bearer ${accessToken}` }
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        if (data.files && data.files.length > 0) {
-          return data.files[0].id;
+      if (res1.ok) {
+        const data1 = await res1.json();
+        if (data1.files && data1.files.length > 0) {
+          return data1.files[0].id;
+        }
+      }
+
+      // 2. Fallback search drive root
+      const queryDrive = encodeURIComponent(`name = '${GDRIVE_FILENAME}' and trashed = false`);
+      const urlDrive = `https://www.googleapis.com/drive/v3/files?spaces=drive&q=${queryDrive}&fields=files(id,name,modifiedTime)`;
+
+      const res2 = await fetch(urlDrive, {
+        headers: { Authorization: `Bearer ${accessToken}` }
+      });
+
+      if (res2.ok) {
+        const data2 = await res2.json();
+        if (data2.files && data2.files.length > 0) {
+          return data2.files[0].id;
         }
       }
     } catch (e) {
@@ -214,7 +232,7 @@ export class GoogleDriveSyncService {
     try {
       const existingFileId = await this.findBackupFileId(accessToken);
       if (!existingFileId) {
-        return { success: false, error: 'No Mosaic backup file found in your Google Drive AppData folder' };
+        return { success: false, error: 'No Mosaic backup file (mosaic-lifeos-db.json) found in your Google Drive AppData folder. Please click "Sync Database to Google Drive" first to upload a backup.' };
       }
 
       const downloadUrl = `https://www.googleapis.com/drive/v3/files/${existingFileId}?alt=media`;
@@ -223,18 +241,23 @@ export class GoogleDriveSyncService {
       });
 
       if (!res.ok) {
-        throw new Error(`Download error: ${res.status} ${res.statusText}`);
+        throw new Error(`Google Drive download HTTP ${res.status}: ${res.statusText}`);
       }
 
       const contentStr = await res.text();
       const parsed = JSON.parse(contentStr);
 
       if (parsed) {
+        // 1. Write to localStorage
         localStorage.setItem('mosaic-lifeos-store', contentStr);
+
+        // 2. Trigger Zustand store in-memory state rehydration
+        useStore.getState().importDataJSON(contentStr);
+
         return { success: true, data: parsed };
       }
 
-      return { success: false, error: 'Invalid Google Drive backup format' };
+      return { success: false, error: 'Invalid Google Drive backup file content' };
     } catch (e: any) {
       console.error('[GoogleDriveSync] Download failed:', e);
       return { success: false, error: e?.message || 'Google Drive download failed' };

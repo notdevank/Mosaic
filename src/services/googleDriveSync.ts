@@ -21,7 +21,7 @@ export interface GoogleDriveSyncResult {
 }
 
 const GDRIVE_FILENAME = 'mosaic-lifeos-db.json';
-const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file';
+const GDRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid';
 
 export class GoogleDriveSyncService {
   private static instance: GoogleDriveSyncService;

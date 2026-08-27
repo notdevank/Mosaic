@@ -69,7 +69,7 @@ export const SettingsView: React.FC = () => {
           accessToken: user.accessToken,
           expiresAt: user.expiresAt
         });
-        setGdriveStatusMsg(`Successfully authenticated as ${user.email || user.name}`);
+        setGdriveStatusMsg(`Successfully authenticated as ${user.email || user.name || 'Google Account'}`);
       });
     }
   }, [gdriveClientId]);
@@ -104,7 +104,7 @@ export const SettingsView: React.FC = () => {
           googleDrive: updatedGDrive
         }
       });
-      setGdriveStatusMsg(`Signed in as ${user.email || 'Google User'}`);
+      setGdriveStatusMsg(`Signed in as ${user.email || user.name || 'Google Account'}`);
     });
 
     googleDriveSync.requestToken();
@@ -351,7 +351,7 @@ export const SettingsView: React.FC = () => {
               </div>
             </div>
 
-            {gdriveSettings.email && (
+            {(gdriveSettings.accessToken || gdriveSettings.email) && (
               <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono flex items-center gap-1">
                 <UserCheck className="w-3.5 h-3.5" />
                 <span>Connected</span>
@@ -432,7 +432,7 @@ export const SettingsView: React.FC = () => {
 
           {/* Google Auth Active Control Panel */}
           <div className="p-5 rounded-2xl bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark space-y-4">
-            {gdriveSettings.email ? (
+            {(gdriveSettings.accessToken || gdriveSettings.email) ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 rounded-xl bg-warm-card dark:bg-zinc-900 border border-warm-border/60 dark:border-white/5">
                   <div className="flex items-center gap-3">
@@ -440,7 +440,7 @@ export const SettingsView: React.FC = () => {
                       <img src={gdriveSettings.picture} alt="Google Avatar" className="w-9 h-9 rounded-full border border-warm-border" />
                     ) : (
                       <div className="w-9 h-9 rounded-full bg-blue-500 text-white font-mono flex items-center justify-center font-bold">
-                        {gdriveSettings.email.charAt(0).toUpperCase()}
+                        {(gdriveSettings.email || gdriveSettings.name || 'G').charAt(0).toUpperCase()}
                       </div>
                     )}
                     <div>

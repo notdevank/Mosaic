@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-warm: #F8F7F3;
+    --text-primary: #191919;
+    --text-muted: #666666;
+    --accent-sage: #68735C;
+    --border-warm: #E6E4DC;
+  }
+
+  .dark {
+    --bg-warm: #0D0D0D;
+    --text-primary: #FFFFFF;
+    --text-muted: #A1A1AA;
+    --accent-sage: #9BB088;
+    --border-warm: #2A2A2A;
+  }
+
+  body {
+    background-color: var(--bg-warm);
+    color: var(--text-primary);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Global Dark Mode High-Contrast Overrides */
+.dark .text-primary-text {
+  color: #FFFFFF !important;
+}
+
+.dark .text-primary-secondary {
+  color: #A1A1AA !important;
+}
+
+.dark ::placeholder {
+  color: #71717A !important;
+  opacity: 1;
+}
+
+.dark input:not([type="checkbox"]):not([type="radio"]),
+.dark textarea {
+  color: #FFFFFF !important;
+  background-color: #1E1E22 !important;
+  border-color: #2C2C32 !important;
+  background-image: none !important;
+}
+
+select {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 0.9em !important;
+  padding-right: 2rem !important;
+}
+
+.dark select {
+  color: #FFFFFF !important;
+  background-color: #1E1E22 !important;
+  border-color: #2C2C32 !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239BB088' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+}
+
+select option {
+  background-color: #F8F7F3;
+  color: #191919;
+}
+
+.dark select option {
+  background-color: #1E1E22 !important;
+  color: #FFFFFF !important;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus {
+  border-color: #9BB088 !important;
+}
+
+/* Eliminate browser click focus rings while preserving keyboard focus */
+button {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button:focus-visible {
+  outline: 2px solid #9BB088 !important;
+  outline-offset: 2px !important;
+}
+
+/* Custom scrollbars - quiet & subtle */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(133, 133, 133, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(104, 115, 92, 0.4);
+}
+
+/* Smooth micro-transitions */
+.transition-quiet {
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base card styling */
+.mosaic-card {
+  @apply bg-warm-card dark:bg-warm-card-dark border border-warm-border dark:border-warm-border-dark rounded-xl p-4 transition-quiet;
+}
+
+.mosaic-row {
+  @apply flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark transition-quiet;
+}
+
+/* Sidebar active indicator slide-in */
+@keyframes slideInLeft {
+  from {
+    transform: translateY(-50%) scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(-50%) scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Subtle pulse for inbox badge */
+@keyframes pulse-subtle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
+}

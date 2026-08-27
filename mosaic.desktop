@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Mosaic
+Comment=Personal Productivity Suite
+Exec=mosaic
+Icon=/home/devank/.local/share/icons/mosaic.png
+Terminal=false
+Type=Application
+Categories=Office;Utility;Productivity;
+StartupWMClass=mosaic

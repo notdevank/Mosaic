@@ -17,7 +17,8 @@ import {
   Info,
   ExternalLink,
   Sparkles,
-  UserCheck
+  UserCheck,
+  HardDrive
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { SyncProvider, GoogleDriveSettings } from '../../types';
@@ -182,6 +183,7 @@ export const SettingsView: React.FC = () => {
     setGdriveStatusMsg('Google account disconnected.');
   };
 
+  // Save Profile Settings Handler
   const handleSaveProfileSettings = (e: React.FormEvent) => {
     e.preventDefault();
     updateUserSettings({ 
@@ -281,30 +283,34 @@ export const SettingsView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 py-6 animate-in fade-in duration-200">
-      {/* Header Title */}
-      <div className="border-b border-warm-border/80 dark:border-warm-border-dark/80 pb-4 flex items-center justify-between">
+    <div className="max-w-4xl mx-auto space-y-6 py-6 animate-in fade-in duration-200 select-none">
+      {/* Premium Header Banner */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-warm-border/70 dark:border-white/10 pb-5">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-primary-text dark:text-primary-text-dark">Settings & Workspace Control</h1>
-          <p className="text-xs font-mono text-primary-secondary mt-0.5">Manage profile preferences, security PIN, cloud sync, and database backups</p>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-sage-600 dark:text-sage-400 font-bold">Workspace Configuration</span>
+          </div>
+          <h1 className="font-serif text-3xl font-bold text-primary-text dark:text-primary-text-dark tracking-tight mt-0.5">
+            Settings & Control Center
+          </h1>
         </div>
 
         {savedSuccess && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono animate-in fade-in">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold animate-in fade-in shadow-xs">
             <Check className="w-4 h-4" />
             <span>Settings Saved</span>
           </div>
         )}
       </div>
 
-      {/* Sleek Top Tab Switcher */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-warm-card/60 dark:bg-zinc-900/60 border border-warm-border/60 dark:border-white/5 backdrop-blur-md">
+      {/* Agency Glass Segmented Tab Bar */}
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-warm-card/70 dark:bg-zinc-900/70 border border-warm-border/70 dark:border-white/10 backdrop-blur-md shadow-subtle">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold transition-all duration-200 ${
             activeTab === 'profile'
-              ? 'bg-sage-500 text-white font-bold shadow-sm'
-              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/50'
+              ? 'bg-sage-500 text-white shadow-md scale-[1.01]'
+              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/60 dark:hover:bg-zinc-800/50'
           }`}
         >
           <User className="w-4 h-4" />
@@ -313,10 +319,10 @@ export const SettingsView: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('sync')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold transition-all duration-200 ${
             activeTab === 'sync'
-              ? 'bg-sage-500 text-white font-bold shadow-sm'
-              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/50'
+              ? 'bg-sage-500 text-white shadow-md scale-[1.01]'
+              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/60 dark:hover:bg-zinc-800/50'
           }`}
         >
           <Cloud className="w-4 h-4" />
@@ -325,10 +331,10 @@ export const SettingsView: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('storage')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs font-bold transition-all duration-200 ${
             activeTab === 'storage'
-              ? 'bg-sage-500 text-white font-bold shadow-sm'
-              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/50'
+              ? 'bg-sage-500 text-white shadow-md scale-[1.01]'
+              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/60 dark:hover:bg-zinc-800/50'
           }`}
         >
           <Database className="w-4 h-4" />
@@ -338,43 +344,54 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 1: Profile & Security */}
       {activeTab === 'profile' && (
-        <form onSubmit={handleSaveProfileSettings} className="mosaic-card p-6 space-y-6 animate-in fade-in duration-150">
+        <form onSubmit={handleSaveProfileSettings} className="rounded-3xl border border-warm-border/80 dark:border-white/10 bg-warm-card/70 dark:bg-zinc-900/70 p-7 space-y-7 backdrop-blur-md shadow-subtle animate-in fade-in duration-200">
           <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-warm-border/60 dark:border-warm-border-dark/60 pb-3">
-              <User className="w-5 h-5 text-sage-600 dark:text-sage-400" />
-              <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Personal Profile</h3>
+            <div className="flex items-center gap-2.5 border-b border-warm-border/60 dark:border-white/10 pb-3.5">
+              <div className="w-8 h-8 rounded-xl bg-sage-500/10 dark:bg-sage-500/20 text-sage-600 dark:text-sage-400 flex items-center justify-center">
+                <User className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Personalization</h3>
+                <p className="text-xs font-mono text-primary-secondary">Customize your display name and dashboard greeting</p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <label className="block text-xs font-mono uppercase text-primary-secondary mb-1.5">Your Display Name</label>
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-primary-secondary mb-1.5">
+                  Your Display Name
+                </label>
                 <input
                   type="text"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="w-full bg-warm-subtle dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2.5 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500"
+                  className="w-full bg-warm-subtle/80 dark:bg-zinc-950/80 border border-warm-border dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-medium text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500 transition-all shadow-xs"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase text-primary-secondary mb-1.5">Custom Greeting Prompt</label>
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-primary-secondary mb-1.5">
+                  Greeting Prompt
+                </label>
                 <input
                   type="text"
                   value={greeting}
                   onChange={(e) => setGreeting(e.target.value)}
-                  className="w-full bg-warm-subtle dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2.5 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500"
+                  className="w-full bg-warm-subtle/80 dark:bg-zinc-950/80 border border-warm-border dark:border-zinc-800 rounded-xl px-4 py-2.5 text-xs font-medium text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500 transition-all shadow-xs"
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 border-t border-warm-border/60 dark:border-warm-border-dark/60 pt-5">
+          <div className="space-y-4 border-t border-warm-border/60 dark:border-white/10 pt-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Shield className="w-5 h-5 text-sage-600 dark:text-sage-400" />
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-sage-500/10 dark:bg-sage-500/20 text-sage-600 dark:text-sage-400 flex items-center justify-center">
+                  <Shield className="w-4 h-4" />
+                </div>
                 <div>
-                  <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">4-Digit Security PIN Lock</h3>
-                  <p className="text-xs font-mono text-primary-secondary">Require a passcode prompt whenever Mosaic launches</p>
+                  <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">4-Digit Passcode Lock</h3>
+                  <p className="text-xs font-mono text-primary-secondary">Require a security PIN screen whenever Mosaic opens</p>
                 </div>
               </div>
 
@@ -385,29 +402,31 @@ export const SettingsView: React.FC = () => {
                   onChange={(e) => setPinEnabled(e.target.checked)}
                   className="sr-only peer"
                 />
-                <div className="w-10 h-6 bg-warm-border peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage-500"></div>
+                <div className="w-10 h-6 bg-warm-border peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage-500 shadow-xs"></div>
               </label>
             </div>
 
             {pinEnabled && (
-              <div className="pl-7 pt-2 animate-in fade-in">
-                <label className="block text-xs font-mono uppercase text-primary-secondary mb-1.5">Set 4-Digit Passcode</label>
+              <div className="pl-10 pt-1 animate-in fade-in duration-150">
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-primary-secondary mb-1.5">
+                  Set 4-Digit Passcode
+                </label>
                 <input
                   type="password"
                   maxLength={4}
                   placeholder="e.g. 1234"
                   value={pinCode}
                   onChange={(e) => setPinCode(e.target.value)}
-                  className="w-48 bg-warm-subtle dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2.5 text-sm font-mono tracking-widest text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500"
+                  className="w-48 bg-warm-subtle/80 dark:bg-zinc-950/80 border border-warm-border dark:border-zinc-800 rounded-xl px-4 py-2.5 text-sm font-mono tracking-widest text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500 transition-all shadow-xs"
                 />
               </div>
             )}
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-warm-border/60 dark:border-warm-border-dark/60">
+          <div className="flex justify-end pt-4 border-t border-warm-border/60 dark:border-white/10">
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-bold shadow-subtle transition-all"
+              className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 active:scale-95 text-white text-xs font-bold shadow-md transition-all duration-150"
             >
               Save Profile & Security
             </button>
@@ -417,27 +436,29 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 2: Cloud & Drive Sync */}
       {activeTab === 'sync' && (
-        <form onSubmit={handleSaveSyncSettings} className="mosaic-card p-6 space-y-6 animate-in fade-in duration-150">
-          <div className="flex items-center justify-between border-b border-warm-border/60 dark:border-warm-border-dark/60 pb-4">
-            <div className="flex items-center gap-2">
-              <Cloud className="w-5 h-5 text-blue-500" />
+        <form onSubmit={handleSaveSyncSettings} className="rounded-3xl border border-warm-border/80 dark:border-white/10 bg-warm-card/70 dark:bg-zinc-900/70 p-7 space-y-7 backdrop-blur-md shadow-subtle animate-in fade-in duration-200">
+          <div className="flex items-center justify-between border-b border-warm-border/60 dark:border-white/10 pb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                <Cloud className="w-4 h-4" />
+              </div>
               <div>
-                <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Sync Engine Provider</h3>
-                <p className="text-xs font-mono text-primary-secondary">Choose how Mosaic syncs your workspace across devices</p>
+                <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Synchronization Engine</h3>
+                <p className="text-xs font-mono text-primary-secondary">Choose how Mosaic syncs your database across your devices</p>
               </div>
             </div>
 
             {gdriveSettings.email && (
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold flex items-center gap-1.5">
-                <UserCheck className="w-4 h-4" />
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold flex items-center gap-1.5 shadow-xs">
+                <UserCheck className="w-3.5 h-3.5" />
                 <span>Connected</span>
               </span>
             )}
           </div>
 
-          {/* Sync Provider Selector Cards */}
+          {/* Sync Provider Radio Selector Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'gdrive' ? 'bg-blue-500/10 border-blue-500/50 text-blue-700 dark:text-blue-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${syncProvider === 'gdrive' ? 'bg-blue-500/10 border-blue-500/50 text-blue-700 dark:text-blue-300 font-bold shadow-xs scale-[1.01]' : 'bg-warm-subtle/60 dark:bg-zinc-950/60 border-warm-border dark:border-zinc-800 text-primary-secondary hover:border-warm-border/90'}`}>
               <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
@@ -454,7 +475,7 @@ export const SettingsView: React.FC = () => {
               </p>
             </label>
 
-            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'remote_api' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${syncProvider === 'remote_api' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold shadow-xs scale-[1.01]' : 'bg-warm-subtle/60 dark:bg-zinc-950/60 border-warm-border dark:border-zinc-800 text-primary-secondary hover:border-warm-border/90'}`}>
               <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
@@ -464,14 +485,14 @@ export const SettingsView: React.FC = () => {
                   onChange={() => setSyncProvider('remote_api')}
                   className="text-sage-500 focus:ring-sage-500"
                 />
-                <span className="text-xs font-mono font-bold">Cloud Server API</span>
+                <span className="text-xs font-mono font-bold">Cloud Server</span>
               </div>
               <p className="text-[10px] text-primary-secondary font-mono leading-relaxed pl-5">
-                WebSocket & REST server endpoints.
+                WebSocket & REST endpoints.
               </p>
             </label>
 
-            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'local_folder' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${syncProvider === 'local_folder' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold shadow-xs scale-[1.01]' : 'bg-warm-subtle/60 dark:bg-zinc-950/60 border-warm-border dark:border-zinc-800 text-primary-secondary hover:border-warm-border/90'}`}>
               <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
@@ -484,11 +505,11 @@ export const SettingsView: React.FC = () => {
                 <span className="text-xs font-mono font-bold">Local File</span>
               </div>
               <p className="text-[10px] text-primary-secondary font-mono leading-relaxed pl-5">
-                Manual JSON snapshot export.
+                Manual JSON file export.
               </p>
             </label>
 
-            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'disabled' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 ${syncProvider === 'disabled' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold shadow-xs scale-[1.01]' : 'bg-warm-subtle/60 dark:bg-zinc-950/60 border-warm-border dark:border-zinc-800 text-primary-secondary hover:border-warm-border/90'}`}>
               <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
@@ -507,15 +528,15 @@ export const SettingsView: React.FC = () => {
           </div>
 
           {/* Google Auth Integration Panel */}
-          <div className="p-5 rounded-2xl bg-warm-subtle/60 dark:bg-zinc-900/60 border border-warm-border dark:border-white/5 space-y-4">
+          <div className="p-6 rounded-2xl bg-warm-subtle/80 dark:bg-zinc-950/80 border border-warm-border/80 dark:border-zinc-800 space-y-5 shadow-xs">
             {(gdriveSettings.accessToken || gdriveSettings.email) ? (
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-warm-card dark:bg-zinc-900 border border-warm-border/60 dark:border-white/5">
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-warm-card dark:bg-zinc-900 border border-warm-border/60 dark:border-white/5 shadow-xs">
                   <div className="flex items-center gap-3">
                     {gdriveSettings.picture ? (
-                      <img src={gdriveSettings.picture} alt="Google Avatar" className="w-10 h-10 rounded-full border border-warm-border" />
+                      <img src={gdriveSettings.picture} alt="Google Avatar" className="w-10 h-10 rounded-full border border-warm-border/80 shadow-xs" />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-blue-500 text-white font-mono flex items-center justify-center font-bold">
+                      <div className="w-10 h-10 rounded-full bg-blue-500 text-white font-mono flex items-center justify-center font-bold shadow-xs">
                         {(gdriveSettings.email || gdriveSettings.name || 'G').charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -528,7 +549,7 @@ export const SettingsView: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleGoogleDisconnect}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-xs font-mono transition-all"
+                    className="flex items-center gap-1 px-3.5 py-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-xs font-mono font-bold transition-all"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Disconnect</span>
@@ -540,7 +561,7 @@ export const SettingsView: React.FC = () => {
                     type="button"
                     onClick={handleGDriveUploadNow}
                     disabled={isSyncing}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-subtle transition-all"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md active:scale-95 transition-all"
                   >
                     <Cloud className={`w-4 h-4 ${isSyncing ? 'animate-bounce' : ''}`} />
                     <span>Sync Database to Google Drive</span>
@@ -550,7 +571,7 @@ export const SettingsView: React.FC = () => {
                     type="button"
                     onClick={handleGDriveRestoreNow}
                     disabled={isSyncing}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-warm-border dark:border-warm-border-dark text-xs font-mono text-primary-text dark:text-primary-text-dark hover:bg-warm-card dark:hover:bg-zinc-800 transition-all"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-warm-border dark:border-zinc-800 text-xs font-mono font-bold text-primary-text dark:text-primary-text-dark hover:bg-warm-card dark:hover:bg-zinc-800 transition-all"
                   >
                     <Download className="w-4 h-4 text-blue-500" />
                     <span>Restore from Google Drive</span>
@@ -558,7 +579,7 @@ export const SettingsView: React.FC = () => {
                 </div>
 
                 {gdriveSettings.lastSyncedAt && (
-                  <div className="text-[11px] font-mono text-primary-secondary">
+                  <div className="text-[11px] font-mono text-primary-secondary pt-1">
                     Last synced to GDrive: {new Date(gdriveSettings.lastSyncedAt).toLocaleString()}
                   </div>
                 )}
@@ -567,8 +588,8 @@ export const SettingsView: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <h4 className="text-xs font-bold text-primary-text dark:text-primary-text-dark">1-Click Google Sign In</h4>
-                    <p className="text-[11px] font-mono text-primary-secondary leading-relaxed">
+                    <h4 className="text-sm font-bold text-primary-text dark:text-primary-text-dark">1-Click Google Sign In</h4>
+                    <p className="text-xs font-mono text-primary-secondary leading-relaxed mt-0.5">
                       Authenticate with your Google Account to back up your database to your private Google Drive AppData folder (`mosaic-lifeos-db.json`).
                     </p>
                   </div>
@@ -576,7 +597,7 @@ export const SettingsView: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-subtle transition-all shrink-0"
+                    className="flex items-center gap-2.5 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md active:scale-95 transition-all shrink-0"
                   >
                     <svg className="w-4 h-4 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -588,11 +609,11 @@ export const SettingsView: React.FC = () => {
                   </button>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-2 border-t border-warm-border/60 dark:border-zinc-800">
                   <button
                     type="button"
                     onClick={() => setShowAdvancedClientId(!showAdvancedClientId)}
-                    className="flex items-center gap-1 text-[11px] font-mono text-primary-secondary hover:text-blue-500 transition-quiet"
+                    className="flex items-center gap-1.5 text-[11px] font-mono text-primary-secondary hover:text-blue-500 transition-all"
                   >
                     <Info className="w-3.5 h-3.5" />
                     <span>{showAdvancedClientId ? 'Hide Custom Client ID Field' : 'Advanced: Custom Google OAuth Client ID'}</span>
@@ -605,7 +626,7 @@ export const SettingsView: React.FC = () => {
                         placeholder="Custom Google OAuth Client ID..."
                         value={gdriveClientId}
                         onChange={(e) => setGdriveClientId(e.target.value)}
-                        className="w-full bg-warm-card dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
+                        className="w-full bg-warm-card dark:bg-zinc-900 border border-warm-border dark:border-zinc-800 rounded-xl px-3 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
                       />
                     </div>
                   )}
@@ -614,16 +635,16 @@ export const SettingsView: React.FC = () => {
             )}
 
             {gdriveStatusMsg && (
-              <div className="text-[11px] font-mono text-blue-600 dark:text-blue-400 bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 animate-in fade-in">
+              <div className="text-[11px] font-mono text-blue-600 dark:text-blue-400 bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 animate-in fade-in font-bold">
                 {gdriveStatusMsg}
               </div>
             )}
           </div>
 
-          <div className="flex justify-end pt-4 border-t border-warm-border/60 dark:border-warm-border-dark/60">
+          <div className="flex justify-end pt-4 border-t border-warm-border/60 dark:border-white/10">
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-bold shadow-subtle transition-all"
+              className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 active:scale-95 text-white text-xs font-bold shadow-md transition-all duration-150"
             >
               Save Sync Configuration
             </button>
@@ -633,23 +654,28 @@ export const SettingsView: React.FC = () => {
 
       {/* TAB 3: Backup & Database */}
       {activeTab === 'storage' && (
-        <div className="space-y-6 animate-in fade-in duration-150">
-          <div className="mosaic-card p-6 space-y-4">
-            <div className="flex items-center gap-2 border-b border-warm-border/60 dark:border-warm-border-dark/60 pb-3">
-              <Database className="w-5 h-5 text-sage-600 dark:text-sage-400" />
-              <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Manual JSON Backup & Restore</h3>
+        <div className="space-y-6 animate-in fade-in duration-200">
+          <div className="rounded-3xl border border-warm-border/80 dark:border-white/10 bg-warm-card/70 dark:bg-zinc-900/70 p-7 space-y-5 backdrop-blur-md shadow-subtle">
+            <div className="flex items-center gap-2.5 border-b border-warm-border/60 dark:border-white/10 pb-3.5">
+              <div className="w-8 h-8 rounded-xl bg-sage-500/10 text-sage-600 dark:text-sage-400 flex items-center justify-center">
+                <HardDrive className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Manual File Backup & Restore</h3>
+                <p className="text-xs font-mono text-primary-secondary">Export or import a full JSON snapshot of your entire database</p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 onClick={handleExportData}
-                className="flex items-center justify-center gap-2 p-4 rounded-2xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-zinc-900/40 text-xs font-mono font-bold text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-zinc-800 transition-all"
+                className="flex items-center justify-center gap-2.5 p-4 rounded-2xl border border-warm-border dark:border-zinc-800 bg-warm-subtle/60 dark:bg-zinc-950/60 text-xs font-mono font-bold text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-zinc-800 transition-all shadow-xs"
               >
                 <Download className="w-4 h-4 text-sage-500" />
                 <span>Export Full JSON Backup</span>
               </button>
 
-              <label className="flex items-center justify-center gap-2 p-4 rounded-2xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-zinc-900/40 text-xs font-mono font-bold text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-zinc-800 cursor-pointer transition-all">
+              <label className="flex items-center justify-center gap-2.5 p-4 rounded-2xl border border-warm-border dark:border-zinc-800 bg-warm-subtle/60 dark:bg-zinc-950/60 text-xs font-mono font-bold text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-zinc-800 cursor-pointer transition-all shadow-xs">
                 <Upload className="w-4 h-4 text-sage-500" />
                 <span>Restore JSON Backup</span>
                 <input
@@ -662,7 +688,7 @@ export const SettingsView: React.FC = () => {
             </div>
           </div>
 
-          <div className="mosaic-card p-6 space-y-4 border-rose-500/30 dark:border-rose-500/40">
+          <div className="rounded-3xl border border-rose-500/30 dark:border-rose-500/40 bg-warm-card/70 dark:bg-zinc-900/70 p-7 space-y-4 backdrop-blur-md shadow-subtle">
             <h3 className="font-serif text-lg text-rose-600 dark:text-rose-400 font-bold">Danger Zone</h3>
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
@@ -673,7 +699,7 @@ export const SettingsView: React.FC = () => {
               <button
                 type="button"
                 onClick={handleWipeDatabase}
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 text-xs font-mono font-bold transition-all"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 active:scale-95 text-xs font-mono font-bold transition-all shadow-xs"
               >
                 <Trash2 className="w-4 h-4" />
                 <span>Wipe Database</span>

@@ -57,10 +57,12 @@ Specialized modules for tracking key domains:
 
 ---
 
-## Privacy & Security
+## Privacy, Security & Synchronization
 
-- **100% Local-First** — Data is stored in your browser's `localStorage` with zero remote servers.
-- **Passcode Lock** — Optional 4-digit PIN lock screen on launch.
+- **100% Local-First** — Data is stored locally in your browser's storage by default.
+- **Real-time Multi-Device Sync** — Instant bidirectional streaming across devices using WebSockets or REST API endpoints.
+- **Standalone Sync Server Included** — Run your own sync server locally or on the cloud (`node server/sync-server.js`).
+- **Passcode Lock** — Optional 4-digit PIN security lock screen.
 - **JSON Export / Import** — 1-click workspace backup and restore via Settings.
 
 ---

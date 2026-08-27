@@ -12,10 +12,15 @@ import {
   RefreshCw,
   Cloud,
   FolderSync,
-  AlertCircle
+  AlertCircle,
+  Wifi,
+  Terminal,
+  Copy,
+  ExternalLink
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { SyncProvider } from '../../types';
+import { syncEngine } from '../../services/syncEngine';
 
 export const SettingsView: React.FC = () => {
   const { 
@@ -37,10 +42,12 @@ export const SettingsView: React.FC = () => {
   // Sync Settings State
   const initialSync = userSettings.syncSettings || { provider: 'disabled', autoSync: false };
   const [syncProvider, setSyncProvider] = useState<SyncProvider>(initialSync.provider);
-  const [localPath, setLocalPath] = useState(initialSync.localPath || '');
-  const [remoteUrl, setRemoteUrl] = useState(initialSync.remoteUrl || '');
-  const [secretToken, setSecretToken] = useState(initialSync.secretToken || '');
+  const [remoteUrl, setRemoteUrl] = useState(initialSync.remoteUrl || 'http://localhost:3001/api/sync');
+  const [secretToken, setSecretToken] = useState(initialSync.secretToken || 'mosaic-secret-key-123');
   const [isSyncing, setIsSyncing] = useState(false);
+  const [testResult, setTestResult] = useState<{ testing: boolean; success?: boolean; latencyMs?: number; error?: string }>({ testing: false });
+
+  const [copiedServerCmd, setCopiedServerCmd] = useState(false);
 
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,13 +58,22 @@ export const SettingsView: React.FC = () => {
       pinCode: pinEnabled ? pinCode : undefined,
       syncSettings: {
         provider: syncProvider,
-        localPath: syncProvider === 'local_folder' ? localPath : undefined,
         remoteUrl: syncProvider === 'remote_api' ? remoteUrl : undefined,
         secretToken: syncProvider === 'remote_api' ? secretToken : undefined,
-        autoSync: true,
+        autoSync: syncProvider !== 'disabled',
         lastSyncedAt: initialSync.lastSyncedAt
       }
     });
+
+    if (syncProvider === 'remote_api' && remoteUrl) {
+      syncEngine.connectWebSocket({
+        provider: 'remote_api',
+        remoteUrl,
+        secretToken,
+        autoSync: true
+      });
+    }
+
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 2000);
   };
@@ -66,6 +82,23 @@ export const SettingsView: React.FC = () => {
     setIsSyncing(true);
     await triggerSyncNow();
     setIsSyncing(false);
+  };
+
+  const handleTestConnection = async () => {
+    setTestResult({ testing: true });
+    const res = await syncEngine.testConnection({
+      provider: 'remote_api',
+      remoteUrl,
+      secretToken,
+      autoSync: true
+    });
+    setTestResult({ testing: false, ...res });
+  };
+
+  const handleCopyCmd = () => {
+    navigator.clipboard.writeText('node server/sync-server.js');
+    setCopiedServerCmd(true);
+    setTimeout(() => setCopiedServerCmd(false), 2000);
   };
 
   const handleExportData = () => {
@@ -106,38 +139,51 @@ export const SettingsView: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto space-y-8 py-6 animate-in fade-in duration-200">
       {/* Header */}
-      <div className="border-b border-warm-border dark:border-warm-border-dark pb-4">
-        <h1 className="font-serif text-2xl font-medium text-primary-text dark:text-primary-text-dark">Settings</h1>
+      <div className="border-b border-warm-border dark:border-warm-border-dark pb-4 flex items-center justify-between">
+        <div>
+          <h1 className="font-serif text-2xl font-medium text-primary-text dark:text-primary-text-dark">Settings & Configuration</h1>
+          <p className="text-xs font-mono text-primary-secondary">User profile, security PIN, data synchronization & backups</p>
+        </div>
+
+        {savedSuccess && (
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono animate-in fade-in">
+            <Check className="w-4 h-4" />
+            <span>Settings Saved</span>
+          </div>
+        )}
       </div>
 
       {/* User Profile & Security Form */}
-      <form onSubmit={handleSaveSettings} className="mosaic-card p-6 space-y-5">
-        <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Personalization & Profile</h3>
+      <form onSubmit={handleSaveSettings} className="mosaic-card p-6 space-y-6">
+        {/* Personalization Section */}
+        <div className="space-y-4">
+          <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Personalization & Profile</h3>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Your Name</label>
-            <input
-              type="text"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
-            />
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Your Name</label>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
+              />
+            </div>
 
-          <div>
-            <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Greeting Prompt</label>
-            <input
-              type="text"
-              value={greeting}
-              onChange={(e) => setGreeting(e.target.value)}
-              className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
-            />
+            <div>
+              <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Greeting Prompt</label>
+              <input
+                type="text"
+                value={greeting}
+                onChange={(e) => setGreeting(e.target.value)}
+                className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
+              />
+            </div>
           </div>
         </div>
 
         {/* Security PIN Section */}
-        <div className="border-t border-warm-border dark:border-warm-border-dark/60 pt-4 space-y-3">
+        <div className="border-t border-warm-border dark:border-warm-border-dark/60 pt-5 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <KeyRound className="w-4 h-4 text-sage-500" />
@@ -150,156 +196,243 @@ export const SettingsView: React.FC = () => {
                 onChange={(e) => setPinEnabled(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-9 h-5 bg-warm-border dark:bg-warm-border-dark peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sage-500"></div>
+              <div className="w-9 h-5 bg-warm-border peer-focus:outline-none rounded-full peer dark:bg-warm-border-dark peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sage-500"></div>
             </label>
           </div>
 
           {pinEnabled && (
-            <div className="max-w-xs space-y-1">
-              <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300">Set 4-Digit Passcode</label>
+            <div className="pl-6 animate-in fade-in duration-150">
               <input
                 type="password"
                 maxLength={4}
-                placeholder="****"
+                placeholder="Set 4-digit PIN..."
                 value={pinCode}
-                onChange={(e) => setPinCode(e.target.value.replace(/\D/g, ''))}
-                className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-sm font-mono tracking-widest text-primary-text dark:text-primary-text-dark focus:outline-none"
+                onChange={(e) => setPinCode(e.target.value)}
+                className="w-48 bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs font-mono tracking-widest text-primary-text dark:text-primary-text-dark focus:outline-none"
               />
             </div>
           )}
         </div>
 
-        {/* Multi-Provider Sync Section */}
-        <div className="border-t border-warm-border dark:border-warm-border-dark/60 pt-4 space-y-4">
+        {/* Realtime Data Synchronization Section */}
+        <div className="border-t border-warm-border dark:border-warm-border-dark/60 pt-5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Cloud className="w-4 h-4 text-sage-500" />
-              <span className="text-sm font-medium text-primary-text dark:text-primary-text-dark">Data Sync & Cloud Backup</span>
+              <Cloud className="w-5 h-5 text-sage-600 dark:text-sage-400" />
+              <div>
+                <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Real-time Multi-Device Sync</h3>
+                <p className="text-xs text-primary-secondary font-mono">Sync data across devices via WebSocket or REST API</p>
+              </div>
             </div>
+
             <div className="flex items-center gap-2">
-              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider ${
-                syncStatus === 'synced' ? 'bg-sage-500/15 text-sage-600 dark:text-sage-300 border border-sage-500/30' :
-                syncStatus === 'syncing' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-300 border border-amber-500/30' :
-                syncStatus === 'error' ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30' :
-                'bg-warm-subtle text-primary-secondary border border-warm-border'
-              }`}>
-                {syncStatus}
-              </span>
               <button
                 type="button"
                 onClick={handleManualSync}
                 disabled={isSyncing || syncProvider === 'disabled'}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark text-xs font-mono text-primary-text dark:text-white hover:bg-warm-card transition-quiet disabled:opacity-50"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-warm-border dark:border-warm-border-dark text-xs font-mono text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark disabled:opacity-50 transition-quiet"
               >
-                <RefreshCw className={`w-3.5 h-3.5 text-sage-500 ${isSyncing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-sage-500' : ''}`} />
                 <span>Sync Now</span>
               </button>
             </div>
           </div>
 
-          <div className="space-y-3">
-            <div>
-              <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Sync Provider</label>
-              <select
-                value={syncProvider}
-                onChange={(e) => setSyncProvider(e.target.value as SyncProvider)}
-                className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
-              >
-                <option value="disabled">Disabled (Local Only)</option>
-                <option value="local_folder">Cloud Drive Folder (Nextcloud / Dropbox / Syncthing)</option>
-                <option value="remote_api">Remote Server REST API (Self-Hosted / Cloud Endpoint)</option>
-              </select>
-            </div>
-
-            {syncProvider === 'local_folder' && (
-              <div>
-                <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Sync Directory Path</label>
+          {/* Sync Provider Radio Selection */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label className={`p-4 rounded-xl border cursor-pointer transition-all ${syncProvider === 'remote_api' ? 'bg-sage-500/10 border-sage-500/40 text-sage-700 dark:text-sage-300 font-medium' : 'bg-warm-subtle/50 dark:bg-warm-subtle-dark/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+              <div className="flex items-center gap-2 mb-1">
                 <input
-                  type="text"
-                  placeholder="e.g. ~/Nextcloud/Mosaic or ~/Sync/Mosaic"
-                  value={localPath}
-                  onChange={(e) => setLocalPath(e.target.value)}
-                  className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
+                  type="radio"
+                  name="syncProvider"
+                  value="remote_api"
+                  checked={syncProvider === 'remote_api'}
+                  onChange={() => setSyncProvider('remote_api')}
+                  className="text-sage-500 focus:ring-sage-500"
                 />
+                <span className="text-xs font-mono font-bold">Cloud / Remote API</span>
               </div>
-            )}
+              <p className="text-[10px] text-primary-secondary font-mono leading-relaxed pl-5">
+                Real-time WebSocket & REST sync for multi-device streaming.
+              </p>
+            </label>
 
-            {syncProvider === 'remote_api' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <label className={`p-4 rounded-xl border cursor-pointer transition-all ${syncProvider === 'local_folder' ? 'bg-sage-500/10 border-sage-500/40 text-sage-700 dark:text-sage-300 font-medium' : 'bg-warm-subtle/50 dark:bg-warm-subtle-dark/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <input
+                  type="radio"
+                  name="syncProvider"
+                  value="local_folder"
+                  checked={syncProvider === 'local_folder'}
+                  onChange={() => setSyncProvider('local_folder')}
+                  className="text-sage-500 focus:ring-sage-500"
+                />
+                <span className="text-xs font-mono font-bold">Local File Backup</span>
+              </div>
+              <p className="text-[10px] text-primary-secondary font-mono leading-relaxed pl-5">
+                Automatic JSON snapshot export to local files.
+              </p>
+            </label>
+
+            <label className={`p-4 rounded-xl border cursor-pointer transition-all ${syncProvider === 'disabled' ? 'bg-sage-500/10 border-sage-500/40 text-sage-700 dark:text-sage-300 font-medium' : 'bg-warm-subtle/50 dark:bg-warm-subtle-dark/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <input
+                  type="radio"
+                  name="syncProvider"
+                  value="disabled"
+                  checked={syncProvider === 'disabled'}
+                  onChange={() => setSyncProvider('disabled')}
+                  className="text-sage-500 focus:ring-sage-500"
+                />
+                <span className="text-xs font-mono font-bold">Disabled (Local)</span>
+              </div>
+              <p className="text-[10px] text-primary-secondary font-mono leading-relaxed pl-5">
+                Data stays strictly offline on this browser device.
+              </p>
+            </label>
+          </div>
+
+          {/* Remote Server Details */}
+          {syncProvider === 'remote_api' && (
+            <div className="space-y-4 p-4 rounded-2xl bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark animate-in fade-in duration-150">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Server Endpoint URL</label>
+                  <label className="block text-xs font-mono uppercase text-primary-secondary mb-1">
+                    Server API Endpoint URL
+                  </label>
                   <input
-                    type="url"
-                    placeholder="https://api.yourdomain.com/v1/sync"
+                    type="text"
+                    placeholder="http://localhost:3001/api/sync or ws://localhost:3001"
                     value={remoteUrl}
                     onChange={(e) => setRemoteUrl(e.target.value)}
-                    className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
+                    className="w-full bg-warm-bg dark:bg-warm-bg-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
                   />
                 </div>
+
                 <div>
-                  <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Secret Token (Optional)</label>
+                  <label className="block text-xs font-mono uppercase text-primary-secondary mb-1">
+                    Secret Auth Token
+                  </label>
                   <input
                     type="password"
-                    placeholder="Bearer token..."
+                    placeholder="mosaic-secret-key-123"
                     value={secretToken}
                     onChange={(e) => setSecretToken(e.target.value)}
-                    className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
+                    className="w-full bg-warm-bg dark:bg-warm-bg-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
                   />
                 </div>
               </div>
-            )}
 
-            {syncError && (
-              <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-mono">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{syncError}</span>
+              {/* Test Connection Actions */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-warm-border dark:border-warm-border-dark/60">
+                <button
+                  type="button"
+                  onClick={handleTestConnection}
+                  disabled={testResult.testing}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-medium shadow-subtle transition-quiet"
+                >
+                  <Wifi className={`w-3.5 h-3.5 ${testResult.testing ? 'animate-ping' : ''}`} />
+                  <span>{testResult.testing ? 'Testing Ping...' : 'Test Connection Ping'}</span>
+                </button>
+
+                {testResult.success !== undefined && (
+                  <div className={`text-xs font-mono flex items-center gap-1.5 ${testResult.success ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                    {testResult.success ? (
+                      <>
+                        <Check className="w-4 h-4" />
+                        <span>Connected successfully ({testResult.latencyMs}ms latency)</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-4 h-4" />
+                        <span>{testResult.error || 'Connection failed'}</span>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+
+              {/* Node.js Server Run Guide */}
+              <div className="pt-3 border-t border-warm-border dark:border-warm-border-dark/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-mono text-primary-secondary">
+                    <Terminal className="w-3.5 h-3.5 text-sage-500" />
+                    <span>Local / Wi-Fi Sync Server Command</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleCopyCmd}
+                    className="flex items-center gap-1 text-[11px] font-mono text-sage-600 dark:text-sage-400 hover:underline"
+                  >
+                    {copiedServerCmd ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedServerCmd ? 'Copied!' : 'Copy Script Command'}</span>
+                  </button>
+                </div>
+
+                <div className="bg-slate-900 text-slate-200 rounded-xl p-3 text-[11px] font-mono border border-slate-800 space-y-1">
+                  <div>$ node server/sync-server.js</div>
+                  <div className="text-slate-400 text-[10px]">
+                    # Starts WebSocket & REST API server on http://localhost:3001/api/sync
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center justify-end pt-2 border-t border-warm-border dark:border-warm-border-dark/60">
-          <div className="flex items-center gap-3">
-            {savedSuccess && <span className="text-xs text-sage-600 dark:text-sage-300 font-medium flex items-center gap-1"><Check className="w-4 h-4" /> Saved!</span>}
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-medium transition-quiet"
-            >
-              Save Settings
-            </button>
-          </div>
+        {/* Save Settings Action */}
+        <div className="flex justify-end pt-4">
+          <button
+            type="submit"
+            className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-medium shadow-subtle transition-quiet"
+          >
+            Save All Settings
+          </button>
         </div>
       </form>
 
-      {/* Data Sovereignty & Local Storage */}
+      {/* Manual Data Backup & Restore */}
       <div className="mosaic-card p-6 space-y-4">
-        <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Local SQLite Database & Reset</h3>
-        <p className="text-xs text-primary-secondary dark:text-stone-300">
-          Mosaic stores 100% of your personal data locally inside your embedded SQLite database (<code className="font-mono text-sage-500">~/.local/share/mosaic/mosaic.db</code>).
-        </p>
+        <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Backup & Restore</h3>
 
-        <div className="flex flex-wrap items-center gap-3 pt-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <button
             onClick={handleExportData}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark text-xs font-medium text-primary-text dark:text-primary-text-dark hover:bg-warm-card transition-quiet"
+            className="flex items-center justify-center gap-2 p-4 rounded-xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-warm-subtle-dark/40 text-xs font-mono font-medium text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark transition-quiet"
           >
             <Download className="w-4 h-4 text-sage-500" />
-            <span>Export Data (JSON)</span>
+            <span>Export Full JSON Backup</span>
           </button>
 
-          <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark text-xs font-medium text-primary-text dark:text-primary-text-dark hover:bg-warm-card cursor-pointer transition-quiet">
+          <label className="flex items-center justify-center gap-2 p-4 rounded-xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-warm-subtle-dark/40 text-xs font-mono font-medium text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark cursor-pointer transition-quiet">
             <Upload className="w-4 h-4 text-sage-500" />
-            <span>Import Data</span>
-            <input type="file" accept=".json" onChange={handleImportFile} className="hidden" />
+            <span>Restore JSON Backup</span>
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImportFile}
+              className="hidden"
+            />
           </label>
+        </div>
+      </div>
 
-          {/* Reset DB */}
+      {/* Danger Zone */}
+      <div className="mosaic-card p-6 space-y-4 border-rose-500/20 dark:border-rose-500/30">
+        <h3 className="font-serif text-lg text-rose-600 dark:text-rose-400 font-medium">Danger Zone</h3>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <div className="text-xs font-medium text-primary-text dark:text-primary-text-dark">Reset & Wipe Local Database</div>
+            <div className="text-[11px] text-primary-secondary font-mono">Wipe all local tasks, logs, habits, and restore fresh seed state.</div>
+          </div>
+
           <button
+            type="button"
             onClick={handleWipeDatabase}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-rose-500/30 text-xs font-medium text-rose-600 hover:bg-rose-500/10 transition-quiet ml-auto"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 text-xs font-mono transition-quiet"
           >
             <Trash2 className="w-4 h-4" />
-            <span>Reset DB & Start Fresh</span>
+            <span>Wipe Database</span>
           </button>
         </div>
       </div>

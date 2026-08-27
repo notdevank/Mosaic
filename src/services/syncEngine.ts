@@ -44,9 +44,45 @@ export class SyncEngine {
     return {
       version: '1.0.0',
       timestamp: new Date().toISOString(),
-      client: 'Mosaic Arch Desktop',
+      client: 'Mosaic Web App',
       data: parsedData
     };
+  }
+
+  // Test connection ping helper
+  async testConnection(settings: SyncSettings): Promise<{ success: boolean; latencyMs?: number; error?: string }> {
+    if (!settings.remoteUrl) {
+      return { success: false, error: 'Server URL is missing' };
+    }
+
+    const start = performance.now();
+    try {
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (settings.secretToken) {
+        headers['Authorization'] = `Bearer ${settings.secretToken}`;
+      }
+
+      const baseUrl = settings.remoteUrl.replace(/\/api\/sync\/?$/, '').replace(/\/ws\/?$/, '');
+      const healthUrl = `${baseUrl}/health`;
+
+      const res = await fetch(healthUrl, { method: 'GET', headers }).catch(() => null);
+      
+      const latencyMs = Math.round(performance.now() - start);
+
+      if (res && res.ok) {
+        return { success: true, latencyMs };
+      }
+
+      // Fallback to sync endpoint GET
+      const syncRes = await fetch(settings.remoteUrl, { method: 'GET', headers });
+      if (syncRes.ok) {
+        return { success: true, latencyMs };
+      }
+
+      return { success: false, error: `HTTP ${syncRes.status}: ${syncRes.statusText}` };
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Connection failed' };
+    }
   }
 
   // Real-time Event-Driven Debounced Auto Sync
@@ -59,7 +95,7 @@ export class SyncEngine {
 
     this.debounceTimer = setTimeout(() => {
       this.sync(settings, onStatusChange);
-    }, 600); // 600ms debounce for real-time responsiveness without network flooding
+    }, 600);
   }
 
   // Connect WebSocket for Instant Multi-Device Real-time Streaming
@@ -69,7 +105,7 @@ export class SyncEngine {
       this.ws = null;
     }
 
-    if (!settings.remoteUrl || !settings.remoteUrl.startsWith('ws')) return;
+    if (!settings.remoteUrl || (!settings.remoteUrl.startsWith('ws://') && !settings.remoteUrl.startsWith('wss://'))) return;
 
     try {
       this.ws = new WebSocket(settings.remoteUrl);

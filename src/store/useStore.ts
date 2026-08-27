@@ -720,6 +720,8 @@ export const useStore = create<State>()(
 
       // Reset & Backup
       resetToSeedData: () => set({
+        currentView: 'home',
+        selectedCustomAreaId: undefined,
         userSettings: initialUserSettings,
         areas: initialAreas,
         tasks: initialTasks,

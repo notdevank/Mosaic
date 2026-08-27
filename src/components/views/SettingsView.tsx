@@ -251,11 +251,23 @@ export const SettingsView: React.FC = () => {
     reader.readAsText(file);
   };
 
-  const handleWipeDatabase = () => {
+  const handleWipeDatabase = async () => {
     if (confirm('Are you sure you want to completely RESET your local database and start fresh? All data will be cleared.')) {
-      localStorage.clear();
-      resetToSeedData();
-      updateUserSettings({ hasCompletedTutorial: false });
+      try {
+        resetToSeedData();
+        localStorage.clear();
+        sessionStorage.clear();
+
+        if (window.indexedDB && window.indexedDB.databases) {
+          const dbs = await window.indexedDB.databases();
+          dbs.forEach(db => {
+            if (db.name) window.indexedDB.deleteDatabase(db.name);
+          });
+        }
+      } catch (e) {
+        console.error('Wipe failed:', e);
+      }
+
       window.location.reload();
     }
   };

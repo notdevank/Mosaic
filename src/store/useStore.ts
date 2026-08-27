@@ -763,10 +763,27 @@ export const useStore = create<State>()(
           const parsed = JSON.parse(jsonStr);
           if (parsed && typeof parsed === 'object') {
             const dataToMerge = parsed.state || parsed;
+
             set((state) => ({
               ...state,
               ...dataToMerge
             }));
+
+            try {
+              const fullSnapshot = {
+                state: {
+                  ...useStore.getState(),
+                  ...dataToMerge
+                },
+                version: 5
+              };
+              const snapshotStr = JSON.stringify(fullSnapshot);
+              localStorage.setItem('mosaic-lifeos-store', snapshotStr);
+              mosaicSQLiteStorage.setItem('mosaic-lifeos-store', snapshotStr);
+            } catch (err) {
+              console.warn('[Store] Storage mirror error on import:', err);
+            }
+
             return true;
           }
           return false;

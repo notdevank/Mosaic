@@ -160,12 +160,34 @@ class GoogleDriveSyncService {
   // Upload database snapshot to Google Drive AppData
   async uploadToDrive(accessToken: string): Promise<GoogleDriveSyncResult> {
     try {
-      const sqliteVal = await mosaicSQLiteStorage.getItem('mosaic-lifeos-store');
-      const localStoreStr = sqliteVal || localStorage.getItem('mosaic-lifeos-store');
-      if (!localStoreStr) {
-        return { success: false, error: 'No local store data found to upload' };
-      }
+      const currentState = useStore.getState();
+      const statePayload = {
+        state: {
+          userSettings: currentState.userSettings,
+          areas: currentState.areas,
+          tasks: currentState.tasks,
+          events: currentState.events,
+          habits: currentState.habits,
+          goals: currentState.goals,
+          projects: currentState.projects,
+          activities: currentState.activities,
+          dailyLogs: currentState.dailyLogs,
+          courses: currentState.courses,
+          assignments: currentState.assignments,
+          exams: currentState.exams,
+          exercises: currentState.exercises,
+          workoutPlans: currentState.workoutPlans,
+          workoutLogs: currentState.workoutLogs,
+          people: currentState.people,
+          mealLogs: currentState.mealLogs,
+          nutritionGoal: currentState.nutritionGoal,
+          inbox: currentState.inbox,
+          reviews: currentState.reviews
+        },
+        version: 5
+      };
 
+      const fileContent = JSON.stringify(statePayload);
       const existingFileId = await this.findBackupFileId(accessToken);
 
       const metadata = {
@@ -173,8 +195,6 @@ class GoogleDriveSyncService {
         mimeType: 'application/json',
         parents: existingFileId ? undefined : ['appDataFolder']
       };
-
-      const fileContent = localStoreStr;
 
       if (existingFileId) {
         const updateUrl = `https://www.googleapis.com/upload/drive/v3/files/${existingFileId}?uploadType=media`;

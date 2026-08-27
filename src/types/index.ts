@@ -331,8 +331,18 @@ export interface NutritionGoal {
   targetDailyWaterLiters: number; // e.g. 3.0
 }
 
-export type SyncProvider = 'disabled' | 'local_folder' | 'remote_api';
+export type SyncProvider = 'disabled' | 'local_folder' | 'remote_api' | 'gdrive';
 export type SyncStatusType = 'idle' | 'syncing' | 'synced' | 'error';
+
+export interface GoogleDriveSettings {
+  clientId?: string;
+  email?: string;
+  name?: string;
+  picture?: string;
+  accessToken?: string;
+  expiresAt?: number;
+  lastSyncedAt?: string;
+}
 
 export interface SyncSettings {
   provider: SyncProvider;
@@ -341,6 +351,7 @@ export interface SyncSettings {
   secretToken?: string;
   autoSync: boolean;
   lastSyncedAt?: string;
+  googleDrive?: GoogleDriveSettings;
 }
 
 export interface UserSettings {

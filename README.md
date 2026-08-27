@@ -60,8 +60,9 @@ Specialized modules for tracking key domains:
 ## Privacy, Security & Synchronization
 
 - **100% Local-First** — Data is stored locally in your browser's storage by default.
+- **Google Auth & Google Drive Sync** — Sign in with Google to sync your database (`mosaic-lifeos-db.json`) directly to your private, isolated Google Drive `appDataFolder`.
 - **Real-time Multi-Device Sync** — Instant bidirectional streaming across devices using WebSockets or REST API endpoints.
-- **Standalone Sync Server Included** — Run your own sync server locally or on the cloud (`node server/sync-server.js`).
+- **Standalone Sync Server Included** — Run your own sync server locally or on the cloud (`node server/sync-server.cjs`).
 - **Passcode Lock** — Optional 4-digit PIN security lock screen.
 - **JSON Export / Import** — 1-click workspace backup and restore via Settings.
 

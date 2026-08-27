@@ -184,6 +184,13 @@ export class SyncEngine {
             this.mergeRemoteData(remoteResult.data);
           }
         }
+      } else if (settings.provider === 'gdrive' && settings.googleDrive?.accessToken) {
+        // Google Drive AppData Sync
+        const { googleDriveSync } = await import('./googleDriveSync');
+        const res = await googleDriveSync.uploadToDrive(settings.googleDrive.accessToken);
+        if (!res.success) {
+          throw new Error(res.error || 'Google Drive upload failed');
+        }
       } else if (settings.provider === 'local_folder') {
         // Local Folder Backup Sync
         const fileName = `mosaic-sync-latest.json`;

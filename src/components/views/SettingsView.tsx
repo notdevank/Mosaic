@@ -182,14 +182,13 @@ export const SettingsView: React.FC = () => {
     setGdriveStatusMsg('Google account disconnected.');
   };
 
-  // Save Settings Handler
   const handleSaveProfileSettings = (e: React.FormEvent) => {
     e.preventDefault();
     updateUserSettings({ 
       userName, 
       greeting,
       pinEnabled,
-      pinCode: pinEnabled ? pinCode : undefined
+      pinCode: pinCode || userSettings.pinCode
     });
 
     setSavedSuccess(true);

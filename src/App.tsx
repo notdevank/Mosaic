@@ -42,14 +42,14 @@ export const App: React.FC = () => {
     }
   }, [userSettings.theme]);
 
-  // 1st Time User Setup (Username & Passcode PIN creation)
-  const isAccountSetupNeeded = !userSettings.pinCode || !userSettings.userName;
+  // 1st Time User Setup (Username creation)
+  const isAccountSetupNeeded = !userSettings.userName && !userSettings.hasCompletedTutorial;
   if (isAccountSetupNeeded) {
-    return <UserSetupModal onCompleted={() => setIsLocked(true)} />;
+    return <UserSetupModal onCompleted={() => setIsLocked(false)} />;
   }
 
-  // Passcode PIN Prompt on Every Startup
-  if (isLocked && userSettings.pinCode && userSettings.pinEnabled !== false) {
+  // Passcode PIN Prompt on Startup (Only if pinEnabled is explicitly true)
+  if (isLocked && userSettings.pinEnabled && userSettings.pinCode) {
     return <PinLockScreen onUnlocked={() => setIsLocked(false)} />;
   }
 

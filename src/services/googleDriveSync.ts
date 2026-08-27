@@ -6,6 +6,7 @@
  */
 
 import { useStore } from '../store/useStore';
+import { mosaicSQLiteStorage } from '../db/sqliteStorage';
 
 export interface GoogleDriveUser {
   email?: string;
@@ -161,7 +162,8 @@ export class GoogleDriveSyncService {
   // Upload local database state snapshot to Google Drive AppData
   async uploadToDrive(accessToken: string): Promise<GoogleDriveSyncResult> {
     try {
-      const localStoreStr = localStorage.getItem('mosaic-lifeos-store');
+      const sqliteVal = await mosaicSQLiteStorage.getItem('mosaic-lifeos-store');
+      const localStoreStr = sqliteVal || localStorage.getItem('mosaic-lifeos-store');
       if (!localStoreStr) {
         return { success: false, error: 'No local store data found to upload' };
       }
@@ -248,8 +250,8 @@ export class GoogleDriveSyncService {
       const parsed = JSON.parse(contentStr);
 
       if (parsed) {
-        // 1. Write to localStorage
-        localStorage.setItem('mosaic-lifeos-store', contentStr);
+        // 1. Write to both SQLite and localStorage
+        await mosaicSQLiteStorage.setItem('mosaic-lifeos-store', contentStr);
 
         // 2. Trigger Zustand store in-memory state rehydration
         useStore.getState().importDataJSON(contentStr);

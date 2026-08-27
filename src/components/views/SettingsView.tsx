@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Settings as SettingsIcon, 
+  User, 
+  Shield, 
+  Cloud, 
+  Database, 
+  KeyRound, 
+  Check, 
+  AlertCircle, 
   Download, 
   Upload, 
-  RotateCcw, 
-  Check, 
-  Shield, 
-  KeyRound, 
-  Sparkles, 
-  Trash2,
-  RefreshCw,
-  Cloud,
-  FolderSync,
-  AlertCircle,
-  Wifi,
-  Terminal,
-  Copy,
-  LogOut,
-  UserCheck,
+  Trash2, 
+  LogOut, 
+  RefreshCw, 
+  Wifi, 
+  Copy, 
+  Info,
   ExternalLink,
-  Info
+  Sparkles,
+  UserCheck
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { SyncProvider, GoogleDriveSettings } from '../../types';
 import { syncEngine } from '../../services/syncEngine';
 import { googleDriveSync, GoogleDriveUser } from '../../services/googleDriveSync';
+
+type SettingsTab = 'profile' | 'sync' | 'storage';
 
 export const SettingsView: React.FC = () => {
   const { 
@@ -37,6 +37,9 @@ export const SettingsView: React.FC = () => {
     triggerSyncNow
   } = useStore();
 
+  const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
+
+  // Personalization & Security State
   const [userName, setUserName] = useState(userSettings.userName);
   const [greeting, setGreeting] = useState(userSettings.greeting);
   const [pinCode, setPinCode] = useState(userSettings.pinCode || '');
@@ -60,7 +63,7 @@ export const SettingsView: React.FC = () => {
   const DEFAULT_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '497003126067-pd08grc2tpba0br2m8219lv2sdksvsoe.apps.googleusercontent.com';
 
   useEffect(() => {
-    // Init Google Auth SDK if Client ID is available
+    // Initialize Google Auth Client
     const activeCid = gdriveClientId.trim() || DEFAULT_CLIENT_ID;
     if (activeCid) {
       googleDriveSync.initAuth(activeCid, (user: GoogleDriveUser) => {
@@ -77,6 +80,7 @@ export const SettingsView: React.FC = () => {
     }
   }, [gdriveClientId]);
 
+  // Google Login Handler
   const handleGoogleLogin = () => {
     const activeCid = gdriveClientId.trim() || DEFAULT_CLIENT_ID;
 
@@ -93,7 +97,6 @@ export const SettingsView: React.FC = () => {
       setGdriveSettings(updatedGDrive);
       setSyncProvider('gdrive');
 
-      // Update store user settings
       updateUserSettings({
         syncSettings: {
           ...initialSync,
@@ -108,6 +111,7 @@ export const SettingsView: React.FC = () => {
     googleDriveSync.requestToken();
   };
 
+  // Upload to Google Drive Handler
   const handleGDriveUploadNow = async () => {
     if (!gdriveSettings.accessToken) {
       alert('Please sign in with Google first.');
@@ -115,7 +119,7 @@ export const SettingsView: React.FC = () => {
     }
 
     setIsSyncing(true);
-    setGdriveStatusMsg('Uploading database to Google Drive AppData folder...');
+    setGdriveStatusMsg('Uploading database to Google Drive...');
 
     const res = await googleDriveSync.uploadToDrive(gdriveSettings.accessToken);
     setIsSyncing(false);
@@ -131,19 +135,20 @@ export const SettingsView: React.FC = () => {
           googleDrive: updatedGDrive
         }
       });
-      setGdriveStatusMsg(`Database backed up to Google Drive successfully at ${new Date().toLocaleTimeString()}`);
+      setGdriveStatusMsg(`✅ Database backed up to Google Drive at ${new Date().toLocaleTimeString()}`);
     } else {
-      setGdriveStatusMsg(`Upload Error: ${res.error}`);
+      setGdriveStatusMsg(`❌ Upload Error: ${res.error}`);
     }
   };
 
+  // Restore from Google Drive Handler
   const handleGDriveRestoreNow = async () => {
     if (!gdriveSettings.accessToken) {
       alert('Please sign in with Google first.');
       return;
     }
 
-    if (!confirm('Are you sure you want to download and restore your database from Google Drive? Local unsaved changes will be merged.')) {
+    if (!confirm('Download and restore database from Google Drive? Your local state will be updated.')) {
       return;
     }
 
@@ -154,13 +159,16 @@ export const SettingsView: React.FC = () => {
     setIsSyncing(false);
 
     if (res.success) {
-      alert('Google Drive database restored successfully! Reloading application state...');
-      window.location.reload();
+      setGdriveStatusMsg('✅ Google Drive database restored successfully!');
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
     } else {
-      setGdriveStatusMsg(`Restore Error: ${res.error}`);
+      setGdriveStatusMsg(`❌ Restore Error: ${res.error}`);
     }
   };
 
+  // Disconnect Google Account
   const handleGoogleDisconnect = () => {
     setGdriveSettings({});
     setSyncProvider('disabled');
@@ -174,13 +182,24 @@ export const SettingsView: React.FC = () => {
     setGdriveStatusMsg('Google account disconnected.');
   };
 
-  const handleSaveSettings = (e: React.FormEvent) => {
+  // Save Settings Handler
+  const handleSaveProfileSettings = (e: React.FormEvent) => {
     e.preventDefault();
     updateUserSettings({ 
       userName, 
       greeting,
       pinEnabled,
-      pinCode: pinEnabled ? pinCode : undefined,
+      pinCode: pinEnabled ? pinCode : undefined
+    });
+
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 2000);
+  };
+
+  // Save Sync Provider Settings
+  const handleSaveSyncSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateUserSettings({ 
       syncSettings: {
         provider: syncProvider,
         remoteUrl: syncProvider === 'remote_api' ? remoteUrl : undefined,
@@ -204,27 +223,7 @@ export const SettingsView: React.FC = () => {
     setTimeout(() => setSavedSuccess(false), 2000);
   };
 
-  const handleManualSync = async () => {
-    setIsSyncing(true);
-    if (syncProvider === 'gdrive' && gdriveSettings.accessToken) {
-      await handleGDriveUploadNow();
-    } else {
-      await triggerSyncNow();
-    }
-    setIsSyncing(false);
-  };
-
-  const handleTestConnection = async () => {
-    setTestResult({ testing: true });
-    const res = await syncEngine.testConnection({
-      provider: 'remote_api',
-      remoteUrl,
-      secretToken,
-      autoSync: true
-    });
-    setTestResult({ testing: false, ...res });
-  };
-
+  // Export JSON File
   const handleExportData = () => {
     const stateStr = localStorage.getItem('mosaic-lifeos-store');
     if (!stateStr) return;
@@ -236,6 +235,7 @@ export const SettingsView: React.FC = () => {
     a.click();
   };
 
+  // Import JSON File
   const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -244,22 +244,24 @@ export const SettingsView: React.FC = () => {
       const content = event.target?.result as string;
       if (content) {
         const ok = importDataJSON(content);
-        if (ok) alert('Backup restored successfully!');
-        else alert('Failed to restore backup. Invalid JSON file format.');
+        if (ok) {
+          alert('Backup restored successfully! Reloading...');
+          window.location.reload();
+        } else {
+          alert('Failed to restore backup. Invalid JSON file format.');
+        }
       }
     };
     reader.readAsText(file);
   };
 
+  // Complete Database Wipe
   const handleWipeDatabase = async () => {
     const isConfirmed = window.confirm('Are you sure you want to completely RESET your local database and start fresh? All tasks, logs, and settings will be wiped.');
     if (!isConfirmed) return;
 
     try {
-      // 1. Reset Zustand store and force-overwrite localStorage with fresh seed state
       resetToSeedData();
-
-      // 2. Wipe IndexedDB databases if present
       if (window.indexedDB && window.indexedDB.databases) {
         try {
           const dbs = await window.indexedDB.databases();
@@ -274,19 +276,18 @@ export const SettingsView: React.FC = () => {
       console.error('[Settings] Wipe database error:', e);
     }
 
-    // 3. Force clean reload to mount fresh seed state
     setTimeout(() => {
       window.location.href = window.location.pathname;
     }, 150);
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 py-6 animate-in fade-in duration-200">
-      {/* Header */}
-      <div className="border-b border-warm-border dark:border-warm-border-dark pb-4 flex items-center justify-between">
+    <div className="max-w-4xl mx-auto space-y-6 py-6 animate-in fade-in duration-200">
+      {/* Header Title */}
+      <div className="border-b border-warm-border/80 dark:border-warm-border-dark/80 pb-4 flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-2xl font-medium text-primary-text dark:text-primary-text-dark">Settings & Configuration</h1>
-          <p className="text-xs font-mono text-primary-secondary">User profile, security PIN, Google Drive & cloud sync</p>
+          <h1 className="font-serif text-2xl font-bold text-primary-text dark:text-primary-text-dark">Settings & Workspace Control</h1>
+          <p className="text-xs font-mono text-primary-secondary mt-0.5">Manage profile preferences, security PIN, cloud sync, and database backups</p>
         </div>
 
         {savedSuccess && (
@@ -297,90 +298,148 @@ export const SettingsView: React.FC = () => {
         )}
       </div>
 
-      {/* User Profile & Security Form */}
-      <form onSubmit={handleSaveSettings} className="mosaic-card p-6 space-y-6">
-        {/* Personalization Section */}
-        <div className="space-y-4">
-          <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Personalization & Profile</h3>
+      {/* Sleek Top Tab Switcher */}
+      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-warm-card/60 dark:bg-zinc-900/60 border border-warm-border/60 dark:border-white/5 backdrop-blur-md">
+        <button
+          onClick={() => setActiveTab('profile')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all ${
+            activeTab === 'profile'
+              ? 'bg-sage-500 text-white font-bold shadow-sm'
+              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/50'
+          }`}
+        >
+          <User className="w-4 h-4" />
+          <span>Profile & Security</span>
+        </button>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Your Name</label>
-              <input
-                type="text"
-                value={userName}
-                onChange={(e) => setUserName(e.target.value)}
-                className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
-              />
+        <button
+          onClick={() => setActiveTab('sync')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all ${
+            activeTab === 'sync'
+              ? 'bg-sage-500 text-white font-bold shadow-sm'
+              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/50'
+          }`}
+        >
+          <Cloud className="w-4 h-4" />
+          <span>Cloud & Drive Sync</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('storage')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium transition-all ${
+            activeTab === 'storage'
+              ? 'bg-sage-500 text-white font-bold shadow-sm'
+              : 'text-primary-secondary hover:text-primary-text dark:hover:text-white hover:bg-warm-subtle/50'
+          }`}
+        >
+          <Database className="w-4 h-4" />
+          <span>Backup & Database</span>
+        </button>
+      </div>
+
+      {/* TAB 1: Profile & Security */}
+      {activeTab === 'profile' && (
+        <form onSubmit={handleSaveProfileSettings} className="mosaic-card p-6 space-y-6 animate-in fade-in duration-150">
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 border-b border-warm-border/60 dark:border-warm-border-dark/60 pb-3">
+              <User className="w-5 h-5 text-sage-600 dark:text-sage-400" />
+              <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Personal Profile</h3>
             </div>
 
-            <div>
-              <label className="block text-xs font-mono uppercase text-primary-secondary dark:text-stone-300 mb-1">Greeting Prompt</label>
-              <input
-                type="text"
-                value={greeting}
-                onChange={(e) => setGreeting(e.target.value)}
-                className="w-full bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-mono uppercase text-primary-secondary mb-1.5">Your Display Name</label>
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="w-full bg-warm-subtle dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2.5 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono uppercase text-primary-secondary mb-1.5">Custom Greeting Prompt</label>
+                <input
+                  type="text"
+                  value={greeting}
+                  onChange={(e) => setGreeting(e.target.value)}
+                  className="w-full bg-warm-subtle dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2.5 text-xs text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500"
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Security PIN Section */}
-        <div className="border-t border-warm-border dark:border-warm-border-dark/60 pt-5 space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <KeyRound className="w-4 h-4 text-sage-500" />
-              <span className="text-sm font-medium text-primary-text dark:text-primary-text-dark">4-Digit Security PIN Lock</span>
+          <div className="space-y-4 border-t border-warm-border/60 dark:border-warm-border-dark/60 pt-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-sage-600 dark:text-sage-400" />
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">4-Digit Security PIN Lock</h3>
+                  <p className="text-xs font-mono text-primary-secondary">Require a passcode prompt whenever Mosaic launches</p>
+                </div>
+              </div>
+
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={pinEnabled}
+                  onChange={(e) => setPinEnabled(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="w-10 h-6 bg-warm-border peer-focus:outline-none rounded-full peer dark:bg-zinc-800 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-sage-500"></div>
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={pinEnabled}
-                onChange={(e) => setPinEnabled(e.target.checked)}
-                className="sr-only peer"
-              />
-              <div className="w-9 h-5 bg-warm-border peer-focus:outline-none rounded-full peer dark:bg-warm-border-dark peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sage-500"></div>
-            </label>
+
+            {pinEnabled && (
+              <div className="pl-7 pt-2 animate-in fade-in">
+                <label className="block text-xs font-mono uppercase text-primary-secondary mb-1.5">Set 4-Digit Passcode</label>
+                <input
+                  type="password"
+                  maxLength={4}
+                  placeholder="e.g. 1234"
+                  value={pinCode}
+                  onChange={(e) => setPinCode(e.target.value)}
+                  className="w-48 bg-warm-subtle dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2.5 text-sm font-mono tracking-widest text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-sage-500"
+                />
+              </div>
+            )}
           </div>
 
-          {pinEnabled && (
-            <div className="pl-6 animate-in fade-in duration-150">
-              <input
-                type="password"
-                maxLength={4}
-                placeholder="Set 4-digit PIN..."
-                value={pinCode}
-                onChange={(e) => setPinCode(e.target.value)}
-                className="w-48 bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs font-mono tracking-widest text-primary-text dark:text-primary-text-dark focus:outline-none"
-              />
-            </div>
-          )}
-        </div>
+          <div className="flex justify-end pt-4 border-t border-warm-border/60 dark:border-warm-border-dark/60">
+            <button
+              type="submit"
+              className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-bold shadow-subtle transition-all"
+            >
+              Save Profile & Security
+            </button>
+          </div>
+        </form>
+      )}
 
-        {/* Google Auth & Google Drive Sync Section */}
-        <div className="border-t border-warm-border dark:border-warm-border-dark/60 pt-5 space-y-4">
-          <div className="flex items-center justify-between">
+      {/* TAB 2: Cloud & Drive Sync */}
+      {activeTab === 'sync' && (
+        <form onSubmit={handleSaveSyncSettings} className="mosaic-card p-6 space-y-6 animate-in fade-in duration-150">
+          <div className="flex items-center justify-between border-b border-warm-border/60 dark:border-warm-border-dark/60 pb-4">
             <div className="flex items-center gap-2">
               <Cloud className="w-5 h-5 text-blue-500" />
               <div>
-                <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Google Auth & Drive Integration</h3>
-                <p className="text-xs text-primary-secondary font-mono">Store your database safely in your private Google Drive AppData folder</p>
+                <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Sync Engine Provider</h3>
+                <p className="text-xs font-mono text-primary-secondary">Choose how Mosaic syncs your workspace across devices</p>
               </div>
             </div>
 
-            {(gdriveSettings.accessToken || gdriveSettings.email) && (
-              <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono flex items-center gap-1">
-                <UserCheck className="w-3.5 h-3.5" />
+            {gdriveSettings.email && (
+              <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-bold flex items-center gap-1.5">
+                <UserCheck className="w-4 h-4" />
                 <span>Connected</span>
               </span>
             )}
           </div>
 
-          {/* Google Sync Provider Selector Card */}
+          {/* Sync Provider Selector Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
-            <label className={`p-3.5 rounded-xl border cursor-pointer transition-all ${syncProvider === 'gdrive' ? 'bg-blue-500/10 border-blue-500/40 text-blue-700 dark:text-blue-300 font-medium' : 'bg-warm-subtle/50 dark:bg-warm-subtle-dark/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
-              <div className="flex items-center gap-2 mb-1">
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'gdrive' ? 'bg-blue-500/10 border-blue-500/50 text-blue-700 dark:text-blue-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+              <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
                   name="syncProvider"
@@ -396,8 +455,8 @@ export const SettingsView: React.FC = () => {
               </p>
             </label>
 
-            <label className={`p-3.5 rounded-xl border cursor-pointer transition-all ${syncProvider === 'remote_api' ? 'bg-sage-500/10 border-sage-500/40 text-sage-700 dark:text-sage-300 font-medium' : 'bg-warm-subtle/50 dark:bg-warm-subtle-dark/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
-              <div className="flex items-center gap-2 mb-1">
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'remote_api' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+              <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
                   name="syncProvider"
@@ -413,8 +472,8 @@ export const SettingsView: React.FC = () => {
               </p>
             </label>
 
-            <label className={`p-3.5 rounded-xl border cursor-pointer transition-all ${syncProvider === 'local_folder' ? 'bg-sage-500/10 border-sage-500/40 text-sage-700 dark:text-sage-300 font-medium' : 'bg-warm-subtle/50 dark:bg-warm-subtle-dark/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
-              <div className="flex items-center gap-2 mb-1">
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'local_folder' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+              <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
                   name="syncProvider"
@@ -426,12 +485,12 @@ export const SettingsView: React.FC = () => {
                 <span className="text-xs font-mono font-bold">Local File</span>
               </div>
               <p className="text-[10px] text-primary-secondary font-mono leading-relaxed pl-5">
-                Manual JSON file export.
+                Manual JSON snapshot export.
               </p>
             </label>
 
-            <label className={`p-3.5 rounded-xl border cursor-pointer transition-all ${syncProvider === 'disabled' ? 'bg-sage-500/10 border-sage-500/40 text-sage-700 dark:text-sage-300 font-medium' : 'bg-warm-subtle/50 dark:bg-warm-subtle-dark/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
-              <div className="flex items-center gap-2 mb-1">
+            <label className={`p-4 rounded-2xl border cursor-pointer transition-all ${syncProvider === 'disabled' ? 'bg-sage-500/10 border-sage-500/50 text-sage-700 dark:text-sage-300 font-bold' : 'bg-warm-subtle/50 dark:bg-zinc-900/50 border-warm-border dark:border-warm-border-dark text-primary-secondary'}`}>
+              <div className="flex items-center gap-2 mb-1.5">
                 <input
                   type="radio"
                   name="syncProvider"
@@ -448,16 +507,16 @@ export const SettingsView: React.FC = () => {
             </label>
           </div>
 
-          {/* Google Auth Active Control Panel */}
-          <div className="p-5 rounded-2xl bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark space-y-4">
+          {/* Google Auth Integration Panel */}
+          <div className="p-5 rounded-2xl bg-warm-subtle/60 dark:bg-zinc-900/60 border border-warm-border dark:border-white/5 space-y-4">
             {(gdriveSettings.accessToken || gdriveSettings.email) ? (
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-3 rounded-xl bg-warm-card dark:bg-zinc-900 border border-warm-border/60 dark:border-white/5">
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-warm-card dark:bg-zinc-900 border border-warm-border/60 dark:border-white/5">
                   <div className="flex items-center gap-3">
                     {gdriveSettings.picture ? (
-                      <img src={gdriveSettings.picture} alt="Google Avatar" className="w-9 h-9 rounded-full border border-warm-border" />
+                      <img src={gdriveSettings.picture} alt="Google Avatar" className="w-10 h-10 rounded-full border border-warm-border" />
                     ) : (
-                      <div className="w-9 h-9 rounded-full bg-blue-500 text-white font-mono flex items-center justify-center font-bold">
+                      <div className="w-10 h-10 rounded-full bg-blue-500 text-white font-mono flex items-center justify-center font-bold">
                         {(gdriveSettings.email || gdriveSettings.name || 'G').charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -470,7 +529,7 @@ export const SettingsView: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleGoogleDisconnect}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-xs font-mono transition-quiet"
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 text-xs font-mono transition-all"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Disconnect</span>
@@ -482,7 +541,7 @@ export const SettingsView: React.FC = () => {
                     type="button"
                     onClick={handleGDriveUploadNow}
                     disabled={isSyncing}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-subtle transition-quiet"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-subtle transition-all"
                   >
                     <Cloud className={`w-4 h-4 ${isSyncing ? 'animate-bounce' : ''}`} />
                     <span>Sync Database to Google Drive</span>
@@ -492,7 +551,7 @@ export const SettingsView: React.FC = () => {
                     type="button"
                     onClick={handleGDriveRestoreNow}
                     disabled={isSyncing}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-warm-border dark:border-warm-border-dark text-xs font-mono text-primary-text dark:text-primary-text-dark hover:bg-warm-card dark:hover:bg-zinc-800 transition-quiet"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-warm-border dark:border-warm-border-dark text-xs font-mono text-primary-text dark:text-primary-text-dark hover:bg-warm-card dark:hover:bg-zinc-800 transition-all"
                   >
                     <Download className="w-4 h-4 text-blue-500" />
                     <span>Restore from Google Drive</span>
@@ -518,7 +577,7 @@ export const SettingsView: React.FC = () => {
                   <button
                     type="button"
                     onClick={handleGoogleLogin}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-subtle transition-all shrink-0"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-subtle transition-all shrink-0"
                   >
                     <svg className="w-4 h-4 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
@@ -530,7 +589,6 @@ export const SettingsView: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Optional Custom OAuth Client ID (Expandable for Self-Hosters) */}
                 <div className="pt-2">
                   <button
                     type="button"
@@ -548,11 +606,8 @@ export const SettingsView: React.FC = () => {
                         placeholder="Custom Google OAuth Client ID..."
                         value={gdriveClientId}
                         onChange={(e) => setGdriveClientId(e.target.value)}
-                        className="w-full bg-warm-card dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-1.5 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
+                        className="w-full bg-warm-card dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
                       />
-                      <p className="text-[10px] font-mono text-primary-secondary">
-                        Only needed if self-hosting on your own domain with custom Google Cloud Console API credentials.
-                      </p>
                     </div>
                   )}
                 </div>
@@ -560,131 +615,74 @@ export const SettingsView: React.FC = () => {
             )}
 
             {gdriveStatusMsg && (
-              <div className="text-[11px] font-mono text-blue-600 dark:text-blue-400 bg-blue-500/10 p-2.5 rounded-xl border border-blue-500/20 animate-in fade-in">
+              <div className="text-[11px] font-mono text-blue-600 dark:text-blue-400 bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 animate-in fade-in">
                 {gdriveStatusMsg}
               </div>
             )}
           </div>
 
-          {/* Remote API Config Options */}
-          {syncProvider === 'remote_api' && (
-            <div className="space-y-4 p-4 rounded-2xl bg-warm-subtle dark:bg-warm-subtle-dark border border-warm-border dark:border-warm-border-dark animate-in fade-in duration-150">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-mono uppercase text-primary-secondary mb-1">
-                    Server API Endpoint URL
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="http://localhost:3002/api/sync"
-                    value={remoteUrl}
-                    onChange={(e) => setRemoteUrl(e.target.value)}
-                    className="w-full bg-warm-bg dark:bg-warm-bg-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
-                  />
-                </div>
+          <div className="flex justify-end pt-4 border-t border-warm-border/60 dark:border-warm-border-dark/60">
+            <button
+              type="submit"
+              className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-bold shadow-subtle transition-all"
+            >
+              Save Sync Configuration
+            </button>
+          </div>
+        </form>
+      )}
 
-                <div>
-                  <label className="block text-xs font-mono uppercase text-primary-secondary mb-1">
-                    Secret Auth Token
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="mosaic-secret-key-123"
-                    value={secretToken}
-                    onChange={(e) => setSecretToken(e.target.value)}
-                    className="w-full bg-warm-bg dark:bg-warm-bg-dark border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
-                  />
-                </div>
-              </div>
-
-              {/* Test Connection Actions */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-warm-border dark:border-warm-border-dark/60">
-                <button
-                  type="button"
-                  onClick={handleTestConnection}
-                  disabled={testResult.testing}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-medium shadow-subtle transition-quiet"
-                >
-                  <Wifi className={`w-3.5 h-3.5 ${testResult.testing ? 'animate-ping' : ''}`} />
-                  <span>{testResult.testing ? 'Testing Ping...' : 'Test Connection Ping'}</span>
-                </button>
-
-                {testResult.success !== undefined && (
-                  <div className={`text-xs font-mono flex items-center gap-1.5 ${testResult.success ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                    {testResult.success ? (
-                      <>
-                        <Check className="w-4 h-4" />
-                        <span>Connected successfully ({testResult.latencyMs}ms latency)</span>
-                      </>
-                    ) : (
-                      <>
-                        <AlertCircle className="w-4 h-4" />
-                        <span>{testResult.error || 'Connection failed'}</span>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
+      {/* TAB 3: Backup & Database */}
+      {activeTab === 'storage' && (
+        <div className="space-y-6 animate-in fade-in duration-150">
+          <div className="mosaic-card p-6 space-y-4">
+            <div className="flex items-center gap-2 border-b border-warm-border/60 dark:border-warm-border-dark/60 pb-3">
+              <Database className="w-5 h-5 text-sage-600 dark:text-sage-400" />
+              <h3 className="font-serif text-lg font-bold text-primary-text dark:text-primary-text-dark">Manual JSON Backup & Restore</h3>
             </div>
-          )}
-        </div>
 
-        {/* Save Settings Action */}
-        <div className="flex justify-end pt-4">
-          <button
-            type="submit"
-            className="px-6 py-2.5 rounded-xl bg-sage-500 hover:bg-sage-600 text-white text-xs font-medium shadow-subtle transition-quiet"
-          >
-            Save All Settings
-          </button>
-        </div>
-      </form>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                onClick={handleExportData}
+                className="flex items-center justify-center gap-2 p-4 rounded-2xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-zinc-900/40 text-xs font-mono font-bold text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-zinc-800 transition-all"
+              >
+                <Download className="w-4 h-4 text-sage-500" />
+                <span>Export Full JSON Backup</span>
+              </button>
 
-      {/* Manual Data Backup & Restore */}
-      <div className="mosaic-card p-6 space-y-4">
-        <h3 className="font-serif text-lg text-primary-text dark:text-primary-text-dark font-medium">Backup & Restore</h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <button
-            onClick={handleExportData}
-            className="flex items-center justify-center gap-2 p-4 rounded-xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-warm-subtle-dark/40 text-xs font-mono font-medium text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark transition-quiet"
-          >
-            <Download className="w-4 h-4 text-sage-500" />
-            <span>Export Full JSON Backup</span>
-          </button>
-
-          <label className="flex items-center justify-center gap-2 p-4 rounded-xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-warm-subtle-dark/40 text-xs font-mono font-medium text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark cursor-pointer transition-quiet">
-            <Upload className="w-4 h-4 text-sage-500" />
-            <span>Restore JSON Backup</span>
-            <input
-              type="file"
-              accept=".json"
-              onChange={handleImportFile}
-              className="hidden"
-            />
-          </label>
-        </div>
-      </div>
-
-      {/* Danger Zone */}
-      <div className="mosaic-card p-6 space-y-4 border-rose-500/20 dark:border-rose-500/30">
-        <h3 className="font-serif text-lg text-rose-600 dark:text-rose-400 font-medium">Danger Zone</h3>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <div className="text-xs font-medium text-primary-text dark:text-primary-text-dark">Reset & Wipe Local Database</div>
-            <div className="text-[11px] text-primary-secondary font-mono">Wipe all local tasks, logs, habits, and restore fresh seed state.</div>
+              <label className="flex items-center justify-center gap-2 p-4 rounded-2xl border border-warm-border dark:border-warm-border-dark bg-warm-subtle/40 dark:bg-zinc-900/40 text-xs font-mono font-bold text-primary-text dark:text-primary-text-dark hover:bg-warm-subtle dark:hover:bg-zinc-800 cursor-pointer transition-all">
+                <Upload className="w-4 h-4 text-sage-500" />
+                <span>Restore JSON Backup</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportFile}
+                  className="hidden"
+                />
+              </label>
+            </div>
           </div>
 
-          <button
-            type="button"
-            onClick={handleWipeDatabase}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 text-xs font-mono transition-quiet"
-          >
-            <Trash2 className="w-4 h-4" />
-            <span>Wipe Database</span>
-          </button>
+          <div className="mosaic-card p-6 space-y-4 border-rose-500/30 dark:border-rose-500/40">
+            <h3 className="font-serif text-lg text-rose-600 dark:text-rose-400 font-bold">Danger Zone</h3>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="text-xs font-bold text-primary-text dark:text-primary-text-dark">Reset & Wipe Local Database</div>
+                <div className="text-[11px] text-primary-secondary font-mono">Wipe all local tasks, logs, habits, and restore fresh seed state.</div>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleWipeDatabase}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 text-xs font-mono font-bold transition-all"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Wipe Database</span>
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

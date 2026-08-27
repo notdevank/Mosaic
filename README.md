@@ -1,15 +1,10 @@
 <div align="center">
 
-```
-  ███╗   ███╗ ██████╗ ███████╗ █████╗ ██╗ ██████╗ 
-  ████╗ ████║██╔═══██╗██╔════╝██╔══██╗██║██╔════╝ 
-  ██╔████╔██║██║   ██║███████╗███████║██║██║      
-  ██║╚██╔╝██║██║   ██║╚════██║██╔══██║██║██║      
-  ██║ ╚═╝ ██║╚██████╔╝███████║██║  ██║██║╚██████╗ 
-  ╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ 
-```
+# 🏛️ MOSAIC
 
-**A local-first Personal Operating System built for focus, tracking, and daily reflection.**
+### **A local-first Personal Operating System built for focus, tracking, and daily reflection.**
+
+---
 
 [![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)

@@ -55,14 +55,17 @@ export const SettingsView: React.FC = () => {
   const [gdriveSettings, setGdriveSettings] = useState<GoogleDriveSettings>(initialSync.googleDrive || {});
   const [gdriveClientId, setGdriveClientId] = useState(initialSync.googleDrive?.clientId || '');
   const [gdriveStatusMsg, setGdriveStatusMsg] = useState<string | null>(null);
-  const [showOAuthGuide, setShowOAuthGuide] = useState(false);
+  const [showAdvancedClientId, setShowAdvancedClientId] = useState(false);
+
+  const DEFAULT_CLIENT_ID = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || '497003126067-pd08grc2tpba0br2m8219lv2sdksvsoe.apps.googleusercontent.com';
 
   useEffect(() => {
-    // Init Google Auth SDK if Client ID is provided
-    if (gdriveClientId.trim()) {
-      googleDriveSync.initAuth(gdriveClientId.trim(), (user: GoogleDriveUser) => {
+    // Init Google Auth SDK if Client ID is available
+    const activeCid = gdriveClientId.trim() || DEFAULT_CLIENT_ID;
+    if (activeCid) {
+      googleDriveSync.initAuth(activeCid, (user: GoogleDriveUser) => {
         setGdriveSettings({
-          clientId: gdriveClientId.trim(),
+          clientId: activeCid,
           email: user.email,
           name: user.name,
           picture: user.picture,
@@ -75,16 +78,11 @@ export const SettingsView: React.FC = () => {
   }, [gdriveClientId]);
 
   const handleGoogleLogin = () => {
-    const cid = gdriveClientId.trim();
-    if (!cid) {
-      setGdriveStatusMsg('⚠️ Please enter your Google OAuth Client ID first (see 2-minute setup guide below).');
-      setShowOAuthGuide(true);
-      return;
-    }
+    const activeCid = gdriveClientId.trim() || DEFAULT_CLIENT_ID;
 
-    googleDriveSync.initAuth(cid, (user: GoogleDriveUser) => {
+    googleDriveSync.initAuth(activeCid, (user: GoogleDriveUser) => {
       const updatedGDrive: GoogleDriveSettings = {
-        clientId: cid,
+        clientId: activeCid,
         email: user.email,
         name: user.name,
         picture: user.picture,
@@ -444,8 +442,8 @@ export const SettingsView: React.FC = () => {
                       </div>
                     )}
                     <div>
-                      <div className="text-xs font-bold text-primary-text dark:text-primary-text-dark">{gdriveSettings.name || 'Google User'}</div>
-                      <div className="text-[11px] font-mono text-primary-secondary">{gdriveSettings.email}</div>
+                      <div className="text-xs font-bold text-primary-text dark:text-primary-text-dark">{gdriveSettings.name || 'Google Account'}</div>
+                      <div className="text-[11px] font-mono text-primary-secondary">{gdriveSettings.email || 'Authenticated User'}</div>
                     </div>
                   </div>
 
@@ -489,64 +487,55 @@ export const SettingsView: React.FC = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
-                    <label className="block text-xs font-mono font-bold uppercase text-primary-text dark:text-primary-text-dark mb-1">
-                      1. Enter your Google OAuth Client ID
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 1234567890-xyz.apps.googleusercontent.com"
-                      value={gdriveClientId}
-                      onChange={(e) => setGdriveClientId(e.target.value)}
-                      className="w-full bg-warm-card dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-4 py-2 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none focus:border-blue-500"
-                    />
+                    <h4 className="text-xs font-bold text-primary-text dark:text-primary-text-dark">1-Click Google Sign In</h4>
+                    <p className="text-[11px] font-mono text-primary-secondary leading-relaxed">
+                      Authenticate with your Google Account to back up your database to your private Google Drive AppData folder (`mosaic-lifeos-db.json`).
+                    </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowOAuthGuide(!showOAuthGuide)}
-                      className="flex items-center gap-1.5 text-xs font-mono text-blue-600 dark:text-blue-400 hover:underline"
-                    >
-                      <Info className="w-3.5 h-3.5" />
-                      <span>{showOAuthGuide ? 'Hide Setup Guide' : 'How to get a free Google OAuth Client ID (2 mins)'}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-subtle transition-all"
-                    >
-                      <svg className="w-4 h-4 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
-                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.29v3.15C3.26 21.3 7.33 24 12 24z"/>
-                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.29C.47 8.2.0 10.04.0 12s.47 3.8 1.29 5.42l3.99-3.15z"/>
-                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24.0 12 .0 7.33.0 3.26 2.7 1.29 6.58l3.99 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                      </svg>
-                      <span>Sign in with Google</span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={handleGoogleLogin}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium shadow-subtle transition-all shrink-0"
+                  >
+                    <svg className="w-4 h-4 bg-white rounded-full p-0.5" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.665-5.17 3.665-9.17z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.29v3.15C3.26 21.3 7.33 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.29C.47 8.2.0 10.04.0 12s.47 3.8 1.29 5.42l3.99-3.15z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24.0 12 .0 7.33.0 3.26 2.7 1.29 6.58l3.99 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>Sign in with Google</span>
+                  </button>
                 </div>
 
-                {/* Step-by-Step Setup Guide */}
-                {showOAuthGuide && (
-                  <div className="p-4 rounded-xl bg-warm-card dark:bg-zinc-900 border border-blue-500/30 text-xs font-mono space-y-2 animate-in fade-in">
-                    <div className="font-bold text-primary-text dark:text-primary-text-dark flex items-center gap-1.5">
-                      <span>🛠️ 3 Easy Steps to Create Your Free Google OAuth Client ID:</span>
+                {/* Optional Custom OAuth Client ID (Expandable for Self-Hosters) */}
+                <div className="pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAdvancedClientId(!showAdvancedClientId)}
+                    className="flex items-center gap-1 text-[11px] font-mono text-primary-secondary hover:text-blue-500 transition-quiet"
+                  >
+                    <Info className="w-3.5 h-3.5" />
+                    <span>{showAdvancedClientId ? 'Hide Custom Client ID Field' : 'Advanced: Custom Google OAuth Client ID'}</span>
+                  </button>
+
+                  {showAdvancedClientId && (
+                    <div className="mt-2 space-y-2 animate-in fade-in">
+                      <input
+                        type="text"
+                        placeholder="Custom Google OAuth Client ID..."
+                        value={gdriveClientId}
+                        onChange={(e) => setGdriveClientId(e.target.value)}
+                        className="w-full bg-warm-card dark:bg-zinc-900 border border-warm-border dark:border-warm-border-dark rounded-xl px-3 py-1.5 text-xs font-mono text-primary-text dark:text-primary-text-dark focus:outline-none"
+                      />
+                      <p className="text-[10px] font-mono text-primary-secondary">
+                        Only needed if self-hosting on your own domain with custom Google Cloud Console API credentials.
+                      </p>
                     </div>
-                    <ol className="list-decimal list-inside space-y-1.5 text-primary-secondary text-[11px] leading-relaxed">
-                      <li>
-                        Go to <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noreferrer" className="text-blue-500 underline inline-flex items-center gap-0.5">Google Cloud Console Credentials <ExternalLink className="w-3 h-3" /></a>
-                      </li>
-                      <li>Click <strong>Create Credentials</strong> &rarr; <strong>OAuth client ID</strong> &rarr; Select <strong>Web application</strong>.</li>
-                      <li>
-                        Add <code>http://localhost:5173</code> (or your web URL) to <strong>Authorized JavaScript origins</strong>.
-                      </li>
-                      <li>Copy the generated <strong>Client ID</strong> and paste it into the input box above!</li>
-                    </ol>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             )}
 

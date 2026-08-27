@@ -44,6 +44,22 @@ export async function getSQLiteDB(): Promise<Database | null> {
   }
 }
 
+// Clear all SQLite database tables & local web storage
+export async function clearSQLiteStorage(): Promise<void> {
+  try {
+    const db = await getSQLiteDB();
+    if (db) {
+      await db.execute('DELETE FROM kv_store').catch(() => {});
+      await db.execute('DELETE FROM tasks').catch(() => {});
+    }
+  } catch (e) {
+    console.error('[SQLite DB] Wipe error:', e);
+  }
+
+  localStorage.clear();
+  sessionStorage.clear();
+}
+
 // Custom Zustand Storage Adapter for SQLite + LocalStorage Fallback
 export const mosaicSQLiteStorage: StateStorage = {
   getItem: async (name: string): Promise<string | null> => {

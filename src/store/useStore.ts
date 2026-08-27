@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { mosaicSQLiteStorage } from '../db/sqliteStorage';
+import { mosaicSQLiteStorage, clearSQLiteStorage } from '../db/sqliteStorage';
 import { 
   ViewType, 
   Area, 
@@ -748,9 +748,8 @@ export const useStore = create<State>()(
         set(seedState);
 
         try {
-          localStorage.clear();
-          sessionStorage.clear();
-          localStorage.setItem('mosaic-lifeos-store', JSON.stringify({
+          clearSQLiteStorage();
+          mosaicSQLiteStorage.setItem('mosaic-lifeos-store', JSON.stringify({
             state: seedState,
             version: 5
           }));

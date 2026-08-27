@@ -143,27 +143,24 @@ export const SettingsView: React.FC = () => {
   // Restore from Google Drive
   const handleGDriveRestoreNow = async () => {
     if (!gdriveSettings.accessToken) {
-      alert('Please sign in with Google first.');
-      return;
-    }
-
-    if (!confirm('Restore your database from Google Drive? This will rehydrate your current workspace data.')) {
+      setGdriveStatusMsg('Connecting to Google...');
+      googleDriveSync.requestToken();
       return;
     }
 
     setIsSyncing(true);
-    setGdriveStatusMsg('Downloading database snapshot from Google Drive...');
+    setGdriveStatusMsg('Searching Google Drive for database backup...');
 
     const res = await googleDriveSync.downloadFromDrive(gdriveSettings.accessToken);
     setIsSyncing(false);
 
     if (res.success) {
-      setGdriveStatusMsg('✅ Google Drive database restored successfully!');
+      setGdriveStatusMsg('✅ Google Drive database restored! Reloading application...');
       setTimeout(() => {
         window.location.reload();
       }, 400);
     } else {
-      setGdriveStatusMsg(`❌ Restore Error: ${res.error}`);
+      setGdriveStatusMsg(`❌ ${res.error}`);
     }
   };
 

@@ -2,8 +2,6 @@
 
 > A minimalist, local-first Personal Life OS built for daily focus, tracking, and reflection.
 
-![Mosaic Dashboard](./public/screenshots/dashboard.png)
-
 ![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)
@@ -15,22 +13,6 @@
 ## Overview
 
 **Mosaic** consolidates your daily schedule, habits, goals, reflections, and specialized life tracking into one unified, offline-first dashboard. All data stays 100% local in your browser.
-
----
-
-## Screenshots
-
-| Home Dashboard | Calendar View |
-| :---: | :---: |
-| ![Dashboard](./public/screenshots/dashboard.png) | ![Calendar](./public/screenshots/calendar.png) |
-
-| Habit Tracker | Daily Log & Reflection |
-| :---: | :---: |
-| ![Habits](./public/screenshots/habits.png) | ![Daily Log](./public/screenshots/daily-log.png) |
-
-| Settings & Security |
-| :---: |
-| ![Settings](./public/screenshots/settings.png) |
 
 ---
 
@@ -80,7 +62,7 @@ Specialized modules for tracking key domains:
 
 ```bash
 # Clone the repository
-git clone https://github.com/notdevank/Mosaic.git
+git clone https://github.com/devank-hub/Mosaic.git
 cd Mosaic
 
 # Install dependencies

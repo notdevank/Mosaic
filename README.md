@@ -25,7 +25,6 @@
 - 🎯 **Multi-Tier Goals** — Cascading goal horizons (`Long-term` down to `Daily`) with visual progress.
 - 📓 **Daily Log** — Journal notes, Mood/Energy/Focus ratings, Wins & Obstacles lists, and On This Day lookbacks.
 - 🟩 **Activity Heatmap** — 365-day activity contribution grid, filterable by life area.
-- 📈 **Plan vs Reality** — 7-day breakdown comparing scheduled intentions against completed output.
 - 🔄 **Periodic Reviews** — Weekly & monthly reflection logs with auto-computed metrics.
 - ⚡ **Quick Capture** — Universal shortcut (`Cmd/Ctrl + K`) to capture thoughts or tasks instantly.
 
@@ -38,7 +37,7 @@ Specialized modules for tracking key domains:
 - 🎓 **Academics** — Course catalog, target GPA calculator, attendance counters, assignment deadlines, exam countdowns, and study timer.
 - 🏋️ **Gym & Fitness** — Mon–Sun muscle group split planner, exercise database, workout session logger, and weight/body fat tracking.
 - 🥗 **Diet & Nutrition** — Meal logging, calorie/macro breakdown (Protein/Carbs/Fats), and daily hydration tracking.
-- 💬 **Personal CRM** — Contact directory with relationship context, last interaction timestamps, and follow-up reminders.
+- 💬 **Communication** — Contact directory with relationship context, last interaction timestamps, and follow-up reminders.
 
 ---
 

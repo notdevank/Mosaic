@@ -10,6 +10,22 @@
 
 ---
 
+## Screenshots
+
+| Home Dashboard | Calendar View |
+| :---: | :---: |
+| ![Dashboard](./public/screenshots/dashboard.png) | ![Calendar](./public/screenshots/calendar.png) |
+
+| Habit Tracker | Daily Log & Reflection |
+| :---: | :---: |
+| ![Habits](./public/screenshots/habits.png) | ![Daily Log](./public/screenshots/daily-log.png) |
+
+| Settings & Security |
+| :---: |
+| ![Settings](./public/screenshots/settings.png) |
+
+---
+
 ## Overview
 
 **Mosaic** consolidates your daily schedule, habits, goals, reflections, and specialized life tracking into one unified, offline-first dashboard. All data stays 100% local in your browser.
@@ -62,7 +78,7 @@ Specialized modules for tracking key domains:
 
 ```bash
 # Clone the repository
-git clone https://github.com/devank-hub/Mosaic.git
+git clone https://github.com/notdevank/Mosaic.git
 cd Mosaic
 
 # Install dependencies

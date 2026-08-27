@@ -9,291 +9,149 @@
   ╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝ ╚═════╝ 
 ```
 
-### **A minimal, local-first Personal Operating System crafted for intentional living.**
-
-*Unify your tasks, habits, goals, calendar, daily reflections, deep work metrics, and life domains into a singular, distraction-free workspace.*
-
----
+**A local-first Personal Operating System built for focus, tracking, and daily reflection.**
 
 [![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Vite](https://img.shields.io/badge/Vite-5.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Zustand](https://img.shields.io/badge/State-Zustand_4.5-764ABC?style=for-the-badge&logo=redux&logoColor=white)](https://github.com/pmndrs/zustand)
-[![Privacy First](https://img.shields.io/badge/Data_Privacy-100%25_Local-emerald?style=for-the-badge&logo=shield&logoColor=white)](#-privacy--data-sovereignty)
+[![Zustand](https://img.shields.io/badge/Zustand-4.5-764ABC?style=for-the-badge&logo=redux&logoColor=white)](https://github.com/pmndrs/zustand)
 [![License: MIT](https://img.shields.io/badge/License-MIT-amber.svg?style=for-the-badge)](LICENSE)
-
-[Key Features](#-key-features) • [Specialized Life Areas](#-specialized-life-areas) • [Architecture](#-system-architecture) • [Quick Start](#-quick-start) • [Roadmap](#-roadmap)
 
 </div>
 
 ---
 
-> [!NOTE]
-> **Why Mosaic?** Traditional productivity apps fragment your mental space across isolated silos—one app for tasks, another for habits, a third for workout logs, and a fourth for journaling. **Mosaic** integrates all of them into a unified, editorial-grade dashboard with zero backend latency and 100% offline data sovereignty.
+## 📌 About Mosaic
+
+**Mosaic** is a unified personal dashboard designed to consolidate daily planning, habit forming, goal setting, journaling, and domain tracking into a single web workspace. Built with a clean, typography-led editorial UI, it runs completely local-first inside your browser with no cloud dependencies required.
 
 ---
 
-## ⚡ The Mosaic Philosophy
+## ⚡ Features
 
-```
-  Traditional Stack               The Mosaic Way
-┌────────────────────┐         ┌─────────────────────────────────────────┐
-│ Task App (Cloud)   │         │                                         │
-├────────────────────┤         │             M O S A I C                 │
-│ Habit Tracker      │         │                                         │
-├────────────────────┤   ───►  │  ┌───────────┐ ┌───────────┐ ┌───────┐  │
-│ Workout Logger     │         │  │ Tasks &   │ │ Habits &  │ │ Life  │  │
-├────────────────────┤         │  │ Calendar  │ │ Analytics │ │ Areas │  │
-│ Journal & Notes    │         │  └───────────┘ └───────────┘ └───────┘  │
-└────────────────────┘         │    100% Local • Zero Cloud • Instant    │
-                               └─────────────────────────────────────────┘
-```
+### 🌅 1. Dashboard (Home)
+- **Time-Aware Greeting & Live Clock**: Dynamic greeting (`Good Morning`, `Good Afternoon`, etc.) and real-time clock.
+- **Waking-Day Progress Bar**: Visual progress indicator tracking time elapsed across your waking day (6:00 AM – 12:00 AM).
+- **Daily Snapshot Tiles**: Quick metrics for completed tasks, habit check-ins, and active goals.
+- **Unified Overview**: Today's scheduled events, task checklist, habit toggles, and daily log preview.
 
-- **📖 Editorial Typography**: Clean serif headers, muted sage accents (`#68735C`), and warm paper background tokens designed to reduce cognitive friction.
-- **🔒 Local-First Sovereignty**: Your data never leaves your device. State is persisted in browser storage and local SQLite databases.
-- **⌨️ Universal Keyboard Ergonomics**: Quick capture and global search powered by universal hotkeys (`Cmd/Ctrl + K`).
-- **🎯 Multi-Scale Cascading**: Connect micro daily actions to macro life goals with visual progress bars.
+### 📋 2. Task Management
+- **Prioritization**: Assign `High`, `Medium`, or `Low` priority tags.
+- **Due Dates & Times**: Schedule tasks with specific due dates and time slots.
+- **Checkable Subtasks**: Add and check off subtasks within any parent task.
+- **Recurrence Rules**: Set tasks to repeat daily, on weekdays, weekly, biweekly, monthly, or custom intervals.
+- **Domain Association**: Tag tasks with specific Goals, Projects, or Life Areas.
 
----
+### 🗓️ 3. Calendar
+- **Grid Views**: Switch between Month, Week, and Day schedule layouts.
+- **Event Scheduling**: Create calendar events with start/end times, location, and notes.
+- **Integrated View**: See scheduled tasks, exams, workout logs, and goals directly on the calendar grid.
 
-## ✨ Key Features
+### 🔁 4. Habits & Streaks
+- **Weekly Tracking Grid**: Check off daily habits across a Monday–Sunday grid.
+- **Streak Calculation**: View current and best completion streaks for each habit.
+- **Completion Effects**: Audio tone and ambient particle visual feedback upon completing items.
 
-<details open>
-<summary><b>🌅 1. Editorial Morning Dashboard</b></summary>
-<br />
+### 🎯 5. Multi-Tier Goals
+- **Goal Horizons**: Categorize goals into `Long-term`, `Yearly`, `Monthly`, `Weekly`, and `Daily` tiers.
+- **Progress Tracking**: Progress percentage sliders (0–100%) and target dates.
 
-- **Waking-Day Progress Bar**: Live visual meter computing day completion percentage based on waking hours (6:00 AM – 12:00 AM).
-- **Time-Aware Greeting & Dateline**: Adapts greeting dynamically (`Good Morning`, `Good Afternoon`, `Good Evening`, `Late Night`) with mono-spaced date formatting.
-- **Snapshot Analytics**: Instant KPI tiles displaying task completion ratios, habit streaks, and active goal counts.
-</details>
+### 📓 6. Daily Log & Bio-Metrics
+- **Self-Assessment Sliders**: Log daily ratings for `Mood` (1–10), `Energy` (1–10), and `Focus` (1–10).
+- **Structured Journaling**: Record daily Wins, Obstacles/Problems, and Tomorrow's Intention.
+- **Auto-Collated Timeline**: View an automatically generated timeline of all completed tasks, activities, and workouts logged on that date.
+- **On This Day**: Look back at daily logs recorded exactly one year prior.
 
-<details open>
-<summary><b>📋 2. Task Management & Recurrence Engine</b></summary>
-<br />
+### 🟩 7. Activity Heatmap
+- **365-Day Contribution Grid**: GitHub-style heatmap tracking overall daily activity density.
+- **Area Filtering**: Filter activity intensity by specific Life Areas (Academics, Gym, Nutrition, etc.).
+- **Day Inspector**: Click any cell to inspect logged activities, habits, and tasks for that date.
 
-- **Priority Triaging**: Assign `High`, `Medium`, or `Low` priority tags with optional due dates and times.
-- **Checkable Subtasks**: Break complex deliverables into micro-steps with instant progress updates.
-- **Flexible Recurrence**: Configure tasks to repeat daily, on weekdays, weekly, biweekly, monthly, or custom intervals.
-- **Cross-Domain Linking**: Tag tasks with specific **Goals**, **Projects**, or **Life Areas**.
-</details>
+### 📈 8. Plan vs Reality
+- **7-Day Comparison**: Compare scheduled calendar events and planned tasks against actual completed tasks, study hours, and workout duration.
 
-<details open>
-<summary><b>🎯 3. Multi-Tiered Cascading Goals</b></summary>
-<br />
+### 🔄 9. Periodic Reviews
+- **Weekly & Monthly Audits**: Guided review logs calculating completed task totals, total study hours, workout counts, and habit completion percentages.
+- **Reflection Prompts**: Fill out fields for *"What went well"*, *"What didn't go well"*, *"What to change"*, and *"Next period priorities"*.
 
-- **5-Tier Goal Hierarchy**: Organize life direction into `Long-term`, `Yearly`, `Monthly`, `Weekly`, and `Daily` horizons.
-- **Progress Tracking**: Automatic progress calculation (0–100%) as linked milestones and tasks are completed.
-</details>
-
-<details open>
-<summary><b>🔁 4. Habit Tracking & Audio-Visual Feedback</b></summary>
-<br />
-
-- **Streak Grid**: Monitor completion history across customizable target frequencies.
-- **Sensory Feedback**: Built-in subtle completion audio and ambient pixel grid particle animations upon completing tasks or habits.
-</details>
-
-<details open>
-<summary><b>📓 5. Daily Reflection & Bio-Metrics</b></summary>
-<br />
-
-- **Daily Bio-Scores**: Log daily self-assessments for `Mood` (1–10), `Energy` (1–10), and `Focus` (1–10).
-- **Structured Journaling**: Capture Wins, Obstacles, and Tomorrow's Intention in dedicated log entries.
-- **Manual Timeline**: Chronologically record events, sessions, or thoughts throughout the day.
-</details>
-
-<details open>
-<summary><b>🟩 6. GitHub-Style Activity Heatmap</b></summary>
-<br />
-
-- **Productivity Matrix**: Visual contribution map tracking total daily output across deep work, study sessions, workouts, and habit practice.
-</details>
-
-<details open>
-<summary><b>🏗️ 7. Project Workspaces & Milestones</b></summary>
-<br />
-
-- **Phase Management**: Track projects through `Planning`, `Active`, `Paused`, and `Completed` stages.
-- **Milestone Tracking**: Define key project checkpoints with individual completion toggles.
-</details>
-
-<details open>
-<summary><b>🔄 8. Periodic Weekly & Monthly Reviews</b></summary>
-<br />
-
-- **Reflection Audits**: Guided review templates to evaluate completed tasks, study hours, habit adherence, wins, and areas for improvement.
-</details>
+### 📥 10. Inbox & Quick Capture
+- **Quick Capture Modal**: Global modal to capture quick thoughts or tasks from anywhere (`Cmd/Ctrl + K`).
+- **Inbox Converter**: Convert captured inbox notes directly into actionable tasks.
 
 ---
 
 ## 🎓 Specialized Life Areas
 
-Mosaic goes beyond generic task lists by providing dedicated, domain-specific sub-applications:
+Mosaic includes dedicated views tailored to specific life domains:
 
-| Icon | Life Area | Deep Feature Set |
-| :---: | :--- | :--- |
-| 🎓 | **Academics** | Course catalog, Target vs Actual GPA calculator, Attendance tracker, Assignment deadlines, Exam countdowns, and a integrated Study Session timer. |
-| 🏋️ | **Gym & Fitness** | Exercise database, Mon–Sun muscle group split planner, Workout logger (sets, reps, weight), Personal Record (PR) tracking. |
-| 🥗 | **Diet & Nutrition** | Meal logging (Breakfast, Lunch, Dinner, Snack), calorie counter, macronutrient ratios (Protein, Carbs, Fats), and daily hydration counter. |
-| 💬 | **Personal CRM** | Contact manager with relationship context, last interaction timestamps, follow-up alerts, and meeting/conversation logs. |
-| 🎨 | **Custom Areas** | Build bespoke spaces tailored to your hobbies, business, or creative pursuits with custom icons and color schemes. |
-
----
-
-## 📐 System Architecture
-
-```mermaid
-graph TD
-    User([User Interface]) --> ReactApp[React 18 + TypeScript App]
-    
-    subgraph State & Logic Layer
-        ReactApp --> ZustandStore[Zustand Central Store]
-        ZustandStore --> SyncEngine[Sync Engine]
-    end
-
-    subgraph Module Ecosystem
-        ZustandStore --> DashboardModule[Home & Snapshot Analytics]
-        ZustandStore --> TaskModule[Task & Recurrence Engine]
-        ZustandStore --> CalendarModule[Calendar & Events]
-        ZustandStore --> HabitModule[Habits & Micro-Effects]
-        ZustandStore --> GoalsModule[Cascading Goal Hierarchy]
-        ZustandStore --> LifeAreasModule[Academics / Gym / Nutrition / CRM]
-        ZustandStore --> JournalModule[Daily Log & Bio-Metrics]
-    end
-
-    subgraph Storage & Persistence
-        ZustandStore --> Adapter[Mosaic SQLite Storage Adapter]
-        Adapter --> LocalStorage[(Browser localStorage)]
-        Adapter -. Optional .-> SQLiteDB[(Local SQLite DB)]
-    end
-```
-
----
-
-## ⌨️ Universal Shortcuts
-
-| Shortcut | Action |
+| Life Area | Key Capabilities |
 | :--- | :--- |
-| `Cmd` / `Ctrl` + `K` | Open Universal Quick Capture / Global Search |
-| `Esc` | Close active modal or lock screen |
-| `Tab` / `Shift + Tab` | Navigate form inputs and modal fields |
+| **🎓 Academics** | Course list, Target vs Actual GPA calculator, Class attendance counters, Assignment deadline manager, Exam countdowns, and a built-in Study Session recorder. |
+| **🏋️ Gym & Fitness** | Mon–Sun muscle group split planner (`chest`, `back`, `legs`, `shoulders`, `arms`, `core`, `rest`), Exercise database, Workout logger (sets, reps, weight in kg), and Body Measurement tracker (weight, body fat %). |
+| **🥗 Diet & Nutrition** | Meal logger (Breakfast, Lunch, Dinner, Snacks), calorie counter, macronutrient tracking (Protein, Carbs, Fats), daily water hydration tracker, and daily macro targets. |
+| **💬 Communication (CRM)** | Contact directory with relationship context, last interaction dates, follow-up reminders, contact information, and interaction history logs. |
+| **🎨 Custom Areas** | Create personalized areas with custom titles, icons, and descriptions. |
 
 ---
 
-## 🔒 Privacy & Data Sovereignty
+## 🔒 Security & Data Management
 
-- **Zero Remote Dependency**: All database operations occur locally inside your client environment.
-- **PIN Lock Shield**: Protect your daily reflections and private metrics with an optional passcode screen on application launch.
-- **1-Click Data Portability**: Export your entire Life OS workspace to raw JSON format or restore backups anytime via Settings.
+- **100% Local Storage**: All data is stored directly in browser `localStorage` (with optional SQLite support).
+- **Startup Passcode PIN Lock**: Optional 4-digit PIN lock screen on application launch to keep your log private on shared computers.
+- **Backup Export & Import**: 1-click JSON data export and import tools under Settings.
 
-```json
-{
-  "userSettings": { "theme": "dark", "accentColor": "#68735C" },
-  "tasks": [...],
-  "habits": [...],
-  "goals": [...],
-  "dailyLogs": { ... }
-}
-```
+---
+
+## 🛠️ Tech Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Frontend Framework** | React 18 |
+| **Language** | TypeScript 5 |
+| **Styling** | Tailwind CSS 3 |
+| **State Management** | Zustand 4 (with Persist middleware) |
+| **Build Tool** | Vite 5 |
+| **Icons** | Lucide React |
 
 ---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- **Node.js**: `≥ 18.0.0`
-- **npm**: `≥ 9.0.0`
-
-### Installation
-
+### 1. Clone the repository
 ```bash
-# 1. Clone the repository
 git clone https://github.com/devank-hub/Mosaic.git
-
-# 2. Navigate to project root
 cd Mosaic
-
-# 3. Install dependencies
-npm install
-
-# 4. Launch development server
-npm run dev
 ```
 
-The application will start at `http://localhost:3000`.
+### 2. Install dependencies
+```bash
+npm install
+```
 
-### Production Build
+### 3. Run development server
+```bash
+npm run dev
+```
+Navigate to `http://localhost:3000` in your browser.
 
-To create an optimized production build for static web deployment:
-
+### 4. Build for production
 ```bash
 npm run build
 ```
-
-The distribution bundle will be output to the `dist/` directory, ready to deploy to **Vercel**, **Netlify**, **GitHub Pages**, or any static host.
-
----
-
-## 📂 Repository Structure
-
-```
-Mosaic/
-├── src/
-│   ├── components/
-│   │   ├── areas/          # Academics, Gym, Nutrition, CRM & Custom Views
-│   │   ├── common/         # Modals (Quick Capture, Global Search, PIN Lock)
-│   │   ├── gym/            # Weekly Split & Exercise Loggers
-│   │   ├── layout/         # Header, Sidebar, BottomNav
-│   │   └── views/          # Main Views (Home, Tasks, Goals, Habits, Heatmap)
-│   ├── db/                 # Local Storage & SQLite Adapter
-│   ├── services/           # Data Sync Engine & Backup Utilities
-│   ├── store/              # Zustand State Store & Initial Seed Data
-│   ├── types/              # Full TypeScript Interfaces
-│   └── utils/              # Sound SFX, Confetti & Date Utilities
-├── public/                 # Favicon & Static Assets
-├── index.html              # HTML Entrypoint
-├── tailwind.config.cjs     # Tailwind Design System Configuration
-├── vite.config.ts          # Vite Bundler Settings
-└── package.json            # Project Manifest & Scripts
-```
+The compiled static assets will be output to `dist/`.
 
 ---
 
-## 🗺️ Roadmap & Vision
+## ⌨️ Shortcuts
 
-- [x] **Core Life OS Engine** (Tasks, Habits, Goals, Calendar, Daily Log)
-- [x] **Specialized Life Areas** (Academics, Fitness, Nutrition, CRM)
-- [x] **PIN Security Lock & Local Data Persistence**
-- [x] **Activity Heatmap & Completion Audio/Visual FX**
-- [ ] **PWA (Progressive Web App) Offline Package**
-- [ ] **WebDAV / Encrypted Cloud Backup Sync**
-- [ ] **Interactive Markdown Notes Editor Integration**
-- [ ] **Exportable Weekly PDF Performance Reports**
-
----
-
-## 🤝 Contributing
-
-Contributions, feedback, and feature proposals are always welcome!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+| Key Shortcut | Action |
+| :--- | :--- |
+| `Cmd` + `K` / `Ctrl` + `K` | Open Quick Capture & Global Search |
+| `Esc` | Close active modal |
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-<div align="center">
-
-**Built with intention.**  
-*If you find Mosaic useful, consider giving the repository a ⭐️!*
-
-</div>
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.

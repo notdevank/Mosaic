@@ -145,11 +145,18 @@ jobs:
           npx tauri android init
           npx tauri android build --apk
 
-      - name: Upload Android APK to GitHub Release
+      - name: Sign Android APK
+        run: |
+          keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+          BUILD_TOOLS=$(find $ANDROID_HOME/build-tools/ -maxdepth 1 -mindepth 1 | sort -V | tail -n 1)
+          UNSIGNED_APK=$(find src-tauri/gen/android/app/build/outputs/apk/ -name "*.apk" | head -n 1)
+          $BUILD_TOOLS/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out Mosaic-v1.0.0-android-signed.apk "$UNSIGNED_APK"
+
+      - name: Upload Signed Android APK to GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
         with:
-          files: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          files: Mosaic-v1.0.0-android-signed.apk
           tag_name: ${{ github.ref_name }}
 
 

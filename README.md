@@ -1,9 +1,10 @@
 # Mosaic
 
-> A minimalist, local-first Personal Life OS built for daily focus, tracking, and reflection.
+> A quiet, local-first Personal Life OS built for daily focus, tracking, and reflection.
 
 ![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
+![Tauri](https://img.shields.io/badge/Tauri-v2-FFC107?style=flat-square&logo=tauri)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
@@ -28,56 +29,64 @@
 
 ## Overview
 
-**Mosaic** consolidates your daily schedule, habits, goals, reflections, and specialized life tracking into one unified, offline-first dashboard. All data stays 100% local in your browser.
+**Mosaic** consolidates daily planning, task execution, habit building, structured journaling, and specialized domain tracking into a unified local workspace. Designed with a quiet, tactile editorial aesthetic, all user data stays 100% local on your device.
+
+---
+
+## Architecture & Storage
+
+- **100% Local-First**: Built with zero mandatory cloud dependencies.
+- **Desktop Storage**: SQLite engine (`sqlite:mosaic.db`) via Tauri v2 desktop runtime.
+- **Web & PWA Storage**: Reactive state persistence with IndexedDB and `localStorage`.
+- **Backup & Restore**: 1-click JSON snapshot export and import via Settings.
+- **Passcode Protection**: Optional 4-digit PIN lock screen.
 
 ---
 
 ## Core Features
 
-- 🌅 **Editorial Dashboard** — Live clock, waking-day progress bar, daily snapshots, and schedule overview.
-- 📋 **Task Manager** — Priority levels, due dates/times, subtasks, recurrence rules, and celebratory SFX.
-- 🗓️ **Calendar** — Month, week, and day views for events, tasks, and deadlines.
-- 🔁 **Habit Tracker** — Daily check-ins, streak tracking, and completion history.
-- 🎯 **Multi-Tier Goals** — Cascading goal horizons (`Long-term` down to `Daily`) with visual progress.
-- 📓 **Daily Log** — Journal notes, Mood/Energy/Focus ratings, Wins & Obstacles lists, and On This Day lookbacks.
-- 🟩 **Activity Heatmap** — 365-day activity contribution grid, filterable by life area.
-- 🔄 **Periodic Reviews** — Weekly & monthly reflection logs with auto-computed metrics.
-- ⚡ **Quick Capture** — Universal shortcut (`Cmd/Ctrl + K`) to capture thoughts or tasks instantly.
+- 🌅 **Editorial Dashboard** — Live clock, waking-day progress indicator, customizable greeting, agenda preview, and daily reflection card.
+- 📓 **Journal Studio** — Write and Read mode tabs with real-time Markdown rendering (headings, bold, italics, task lists, blockquotes), reading time calculator, and mood tracking.
+- 🏋️ **Gym & Workout Studio** — Real-time workout logger with set completion checklists, weight (kg) and rep inputs, volume calculation, and a customizable 7-day Weekly Split table with custom focus notes.
+- 📋 **Task Management** — Priority tags, due dates, subtasks, and quick task capture.
+- 🗓️ **Calendar & Agenda** — Interactive month, week, and day views mapping tasks, events, and deadlines.
+- 🔁 **Habit Tracking** — Daily check-ins, streak calculations, and completion history.
+- 🟩 **Activity Heatmap** — 365-day contribution matrix tracking habits, study, workouts, and tasks.
+- 📥 **Inbox & Quick Capture** — Instant thought capture space (`Inbox`) to dump unprocessed ideas and convert them to tasks later.
 
 ---
 
-## Life Areas
+## Life Modules
 
-Specialized modules for tracking key domains:
-
-- 🎓 **Academics** — Course catalog, target GPA calculator, attendance counters, assignment deadlines, exam countdowns, and study timer.
-- 🏋️ **Gym & Fitness** — Mon–Sun muscle group split planner, exercise database, workout session logger, and weight/body fat tracking.
-- 🥗 **Diet & Nutrition** — Meal logging, calorie/macro breakdown (Protein/Carbs/Fats), and daily hydration tracking.
-- 💬 **Communication** — Contact directory with relationship context, last interaction timestamps, and follow-up reminders.
+- 🎓 **Academics** — Course catalog, target GPA calculator, attendance counters, assignment deadlines, and study session timer.
+- 🏋️ **Gym & Fitness** — Workout logger, volume metrics, and customizable weekly training split schedule.
+- 🥗 **Diet & Nutrition** — Daily meal logging, macro distribution (Protein, Carbs, Fats), and hydration tracking.
+- 💬 **Communication** — Contact directory with relationship notes and follow-up reminders.
 
 ---
 
-## Privacy, Security & Synchronization
+## Cross-Platform Binaries
 
-- **100% Local-First** — Data is stored locally in your browser's storage by default.
-- **Google Auth & Google Drive Sync** — Sign in with Google to sync your database (`mosaic-lifeos-db.json`) directly to your private, isolated Google Drive `appDataFolder`.
-- **Real-time Multi-Device Sync** — Instant bidirectional streaming across devices using WebSockets or REST API endpoints.
-- **Standalone Sync Server Included** — Run your own sync server locally or on the cloud (`node server/sync-server.cjs`).
-- **Passcode Lock** — Optional 4-digit PIN security lock screen.
-- **JSON Export / Import** — 1-click workspace backup and restore via Settings.
+Mosaic builds natively for desktop and web via Tauri v2 and GitHub Actions:
+
+- **macOS**: Universal Binary (`.dmg`, `.app`) for Apple Silicon and Intel.
+- **Windows**: 64-bit NSIS Setup (`.exe`) and `.msi` installers.
+- **Linux**: `.AppImage` and Debian `.deb` packages.
+- **Web App**: Production-optimized PWA bundle.
 
 ---
 
 ## Tech Stack
 
 - **Frontend**: React 18, TypeScript 5, Vite 5
-- **Styling**: Tailwind CSS 3
-- **State & Storage**: Zustand 4 (Persist middleware with `localStorage`)
+- **Desktop Runtime**: Tauri v2, Rust
+- **Styling**: Tailwind CSS 3 (Warm monochrome palette with sage green accents)
+- **State Management**: Zustand 4
 - **Icons**: Lucide React
 
 ---
 
-## Getting Started
+## Development Setup
 
 ```bash
 # Clone the repository
@@ -87,8 +96,11 @@ cd Mosaic
 # Install dependencies
 npm install
 
-# Start development server
+# Start web development server
 npm run dev
+
+# Start Tauri desktop application
+npm run tauri:dev
 ```
 
 Open `http://localhost:3000` in your browser.

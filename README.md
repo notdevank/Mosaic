@@ -76,6 +76,18 @@ Mosaic builds natively for desktop and web via Tauri v2 and GitHub Actions:
 
 ---
 
+## Download & Installation
+
+For regular users, download the pre-compiled installer for your operating system:
+
+| Platform | Download | Format |
+| :--- | :--- | :--- |
+| 🍏 **macOS** | [Download Universal `.dmg`](https://github.com/notdevank/Mosaic/releases/latest) | Apple Silicon & Intel Universal |
+| 🪟 **Windows** | [Download `.exe` Installer](https://github.com/notdevank/Mosaic/releases/latest) | 64-bit Installer |
+| 🐧 **Linux** | [Download `.AppImage` / `.deb`](https://github.com/notdevank/Mosaic/releases/latest) | AppImage & Debian Package |
+
+---
+
 ## Tech Stack
 
 - **Frontend**: React 18, TypeScript 5, Vite 5
@@ -86,7 +98,9 @@ Mosaic builds natively for desktop and web via Tauri v2 and GitHub Actions:
 
 ---
 
-## Development Setup
+## Development Setup (For Contributors)
+
+If you wish to build from source or contribute to Mosaic:
 
 ```bash
 # Clone the repository

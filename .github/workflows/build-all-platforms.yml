@@ -140,3 +140,16 @@ jobs:
       - name: Build Web Dist
         run: npm run build:web
 
+      - name: Build Android APK (Tauri v2)
+        run: |
+          npx tauri android init
+          npx tauri android build --apk
+
+      - name: Upload Android APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+        with:
+          files: src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+          tag_name: ${{ github.ref_name }}
+
+

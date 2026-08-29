@@ -6,6 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:web": "tsc && vite build",
+    "build:linux": "tauri build",
+    "build:windows": "tauri build --target x86_64-pc-windows-msvc",
+    "build:android": "tauri android build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "tauri": "tauri",
@@ -15,6 +19,7 @@
   },
   "dependencies": {
     "@tauri-apps/plugin-sql": "^2.4.0",
+    "@supabase/supabase-js": "^2.45.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.395.0",

@@ -64,8 +64,8 @@ export const initialExercises: Exercise[] = [
 export const initialWorkoutPlans: WorkoutPlan[] = [
   {
     id: 'wp-ppl-push',
-    name: 'Classic PPL Push (Hypertrophy)',
-    description: 'Premier science-based 6-day split targeting Chest, Shoulders, and Triceps for peak hypertrophy.',
+    name: 'PPL Push',
+    description: 'Chest, Shoulders, and Triceps.',
     exercises: [
       { exerciseId: 'ex-1', exerciseName: 'Barbell Bench Press', targetSets: 4, targetReps: 8, targetWeightKg: 80 },
       { exerciseId: 'ex-3', exerciseName: 'Incline Dumbbell Press', targetSets: 3, targetReps: 10, targetWeightKg: 28 },
@@ -76,8 +76,8 @@ export const initialWorkoutPlans: WorkoutPlan[] = [
   },
   {
     id: 'wp-gvt-10x10',
-    name: 'German Volume Training (GVT 10×10)',
-    description: 'Legendary German 10-set 10-rep shock protocol designed to trigger massive muscular growth.',
+    name: 'German Volume Training',
+    description: '10 sets x 10 reps.',
     exercises: [
       { exerciseId: 'ex-bench-gvt', exerciseName: 'Barbell Bench Press (10x10)', targetSets: 10, targetReps: 10, targetWeightKg: 65 },
       { exerciseId: 'ex-row-gvt', exerciseName: 'Bent-Over Barbell Row (10x10)', targetSets: 10, targetReps: 10, targetWeightKg: 55 },
@@ -86,8 +86,8 @@ export const initialWorkoutPlans: WorkoutPlan[] = [
   },
   {
     id: 'wp-arnold-golden',
-    name: 'Arnold Golden Era Chest & Back',
-    description: '70s Golden Era chest/back antagonist superset split popularized by 7x Mr. Olympia Arnold Schwarzenegger.',
+    name: 'Chest & Back Split',
+    description: 'Chest and back supersets.',
     exercises: [
       { exerciseId: 'ex-arnold-bench', exerciseName: 'Flat Barbell Bench Press', targetSets: 5, targetReps: 10, targetWeightKg: 90 },
       { exerciseId: 'ex-arnold-pullup', exerciseName: 'Wide-Grip Chins / Pull-Ups', targetSets: 5, targetReps: 10, targetWeightKg: 0 },

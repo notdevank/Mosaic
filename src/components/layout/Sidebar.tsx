@@ -17,7 +17,8 @@ import {
   Trash2,
   Sparkles,
   Compass,
-  Utensils
+  Utensils,
+  Archive
 } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { ViewType } from '../../types';
@@ -38,15 +39,16 @@ export const Sidebar: React.FC = () => {
 
   const navItems: { id: ViewType; label: string; icon: React.ReactNode; badge?: number }[] = [
     { id: 'home', label: 'Home', icon: <Home className="w-4 h-4" /> },
+    { id: 'inbox', label: 'Inbox', icon: <Inbox className="w-4 h-4" />, badge: unprocessedInboxCount },
+    { id: 'today', label: 'Today', icon: <BookOpen className="w-4 h-4" /> },
+    { id: 'journal', label: 'Journal', icon: <Sparkles className="w-4 h-4" /> },
     { id: 'calendar', label: 'Calendar', icon: <Calendar className="w-4 h-4" /> },
     { id: 'tasks', label: 'Tasks', icon: <CheckSquare className="w-4 h-4" /> },
     { id: 'goals', label: 'Goals', icon: <Target className="w-4 h-4" /> },
     { id: 'habits', label: 'Habits', icon: <Repeat className="w-4 h-4" /> },
-    { id: 'daily-log', label: 'Daily Log', icon: <BookOpen className="w-4 h-4" /> },
-    { id: 'heatmap', label: 'Activity & Heatmap', icon: <HeatmapIcon className="w-4 h-4" /> },
+    { id: 'heatmap', label: 'Life Heatmap', icon: <HeatmapIcon className="w-4 h-4" /> },
     { id: 'projects', label: 'Projects', icon: <FolderKanban className="w-4 h-4" /> },
-    { id: 'reviews', label: 'Reviews', icon: <BookCheck className="w-4 h-4" /> },
-    { id: 'inbox', label: 'Inbox', icon: <Inbox className="w-4 h-4" />, badge: unprocessedInboxCount },
+    { id: 'archive', label: 'Archive', icon: <Archive className="w-4 h-4" /> },
   ];
 
   const getAreaIcon = (iconName: string) => {

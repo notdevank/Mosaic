@@ -9,21 +9,21 @@ export const BottomNav: React.FC = () => {
 
   const mainTabs: { id: ViewType; label: string; icon: React.ReactNode }[] = [
     { id: 'home', label: 'Home', icon: <Home className="w-5 h-5" /> },
+    { id: 'today', label: 'Today', icon: <BookOpen className="w-5 h-5" /> },
+    { id: 'journal', label: 'Journal', icon: <BookCheck className="w-5 h-5" /> },
     { id: 'calendar', label: 'Calendar', icon: <Calendar className="w-5 h-5" /> },
-    { id: 'tasks', label: 'Tasks', icon: <CheckSquare className="w-5 h-5" /> },
-    { id: 'daily-log', label: 'Log', icon: <BookOpen className="w-5 h-5" /> },
   ];
 
   const moreItems: { id: ViewType; label: string; icon: React.ReactNode }[] = [
+    { id: 'tasks', label: 'Tasks', icon: <CheckSquare className="w-5 h-5" /> },
     { id: 'goals', label: 'Goals', icon: <Target className="w-5 h-5" /> },
     { id: 'habits', label: 'Habits', icon: <Repeat className="w-5 h-5" /> },
-    { id: 'heatmap', label: 'Activity & Heatmap', icon: <Activity className="w-5 h-5" /> },
+    { id: 'heatmap', label: 'Life Heatmap', icon: <Activity className="w-5 h-5" /> },
     { id: 'projects', label: 'Projects', icon: <FolderKanban className="w-5 h-5" /> },
-    { id: 'reviews', label: 'Reviews', icon: <BookCheck className="w-5 h-5" /> },
-    { id: 'inbox', label: 'Inbox', icon: <Inbox className="w-5 h-5" /> },
+    { id: 'archive', label: 'Archive', icon: <Inbox className="w-5 h-5" /> },
     { id: 'academics', label: 'Academics', icon: <BookOpen className="w-5 h-5" /> },
     { id: 'gym', label: 'Gym', icon: <Activity className="w-5 h-5" /> },
-    { id: 'nutrition', label: 'Diet & Nutrition', icon: <Utensils className="w-5 h-5" /> },
+    { id: 'nutrition', label: 'Nutrition', icon: <Utensils className="w-5 h-5" /> },
     { id: 'settings', label: 'Settings', icon: <Settings className="w-5 h-5" /> },
   ];
 

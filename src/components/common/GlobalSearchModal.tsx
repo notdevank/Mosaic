@@ -170,11 +170,56 @@ export const GlobalSearchModal: React.FC = () => {
           )}
         </div>
 
-        {/* Results List */}
+        {/* Results List / Command Palette Actions */}
         <div className="max-h-96 overflow-y-auto p-2">
           {query.trim().length === 0 ? (
-            <div className="py-8 text-center text-xs text-primary-secondary dark:text-stone-300">
-              Type to search across your entire Mosaic life system...
+            <div className="space-y-1">
+              <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-primary-secondary">
+                Quick Actions
+              </div>
+              <button
+                onClick={() => { setGlobalSearchOpen(false); useStore.getState().setQuickCaptureOpen(true); }}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark text-left"
+              >
+                <div className="flex items-center gap-3 text-xs font-medium text-primary-text dark:text-white">
+                  <CheckSquare className="w-4 h-4 text-sage-500" />
+                  <span>Quick Capture (Thought, Task, Note)</span>
+                </div>
+                <span className="text-[10px] font-mono text-primary-secondary">Ctrl + C</span>
+              </button>
+
+              <button
+                onClick={() => { setGlobalSearchOpen(false); setCurrentView('journal'); }}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark text-left"
+              >
+                <div className="flex items-center gap-3 text-xs font-medium text-primary-text dark:text-white">
+                  <BookOpen className="w-4 h-4 text-sage-500" />
+                  <span>Write Journal Entry</span>
+                </div>
+                <span className="text-[10px] font-mono text-primary-secondary">Go to Journal</span>
+              </button>
+
+              <button
+                onClick={() => { setGlobalSearchOpen(false); setCurrentView('today'); }}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark text-left"
+              >
+                <div className="flex items-center gap-3 text-xs font-medium text-primary-text dark:text-white">
+                  <Calendar className="w-4 h-4 text-sage-500" />
+                  <span>Open Today’s Canvas</span>
+                </div>
+                <span className="text-[10px] font-mono text-primary-secondary">Go to Today</span>
+              </button>
+
+              <button
+                onClick={() => { setGlobalSearchOpen(false); setCurrentView('archive'); }}
+                className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-warm-subtle dark:hover:bg-warm-subtle-dark text-left"
+              >
+                <div className="flex items-center gap-3 text-xs font-medium text-primary-text dark:text-white">
+                  <FolderKanban className="w-4 h-4 text-sage-500" />
+                  <span>Open Life Archive</span>
+                </div>
+                <span className="text-[10px] font-mono text-primary-secondary">Go to Archive</span>
+              </button>
             </div>
           ) : results.length === 0 ? (
             <div className="py-8 text-center text-xs text-primary-secondary dark:text-stone-300">

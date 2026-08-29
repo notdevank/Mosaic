@@ -9,25 +9,31 @@ import { NewAreaModal } from './components/common/NewAreaModal';
 import { PinLockScreen } from './components/common/PinLockScreen';
 import { UserSetupModal } from './components/common/UserSetupModal';
 
-// Views
-import { HomeView } from './components/views/HomeView';
-import { CalendarView } from './components/views/CalendarView';
-import { TasksView } from './components/views/TasksView';
-import { GoalsView } from './components/views/GoalsView';
-import { HabitsView } from './components/views/HabitsView';
-import { DailyLogView } from './components/views/DailyLogView';
-import { HeatmapView } from './components/views/HeatmapView';
-import { ProjectsView } from './components/views/ProjectsView';
-import { ReviewsView } from './components/views/ReviewsView';
-import { InboxView } from './components/views/InboxView';
-import { SettingsView } from './components/views/SettingsView';
-
-// Areas
-import { AcademicsArea } from './components/areas/AcademicsArea';
-import { GymArea } from './components/areas/GymArea';
-import { CommunicationArea } from './components/areas/CommunicationArea';
-import { NutritionArea } from './components/areas/NutritionArea';
-import { CustomAreaView } from './components/areas/CustomAreaView';
+// Views & Areas
+import { 
+  HomeView, 
+  TodayView, 
+  JournalView, 
+  CalendarView, 
+  TasksView, 
+  GoalsView, 
+  HabitsView, 
+  DailyLogView, 
+  HeatmapView, 
+  ProjectsView, 
+  ReviewsView, 
+  InboxView, 
+  ArchiveView, 
+  AreasView, 
+  SettingsView 
+} from './components/views';
+import { 
+  AcademicsArea, 
+  GymArea, 
+  CommunicationArea, 
+  NutritionArea, 
+  CustomAreaView 
+} from './components/areas';
 
 export const App: React.FC = () => {
   const { currentView, userSettings } = useStore();
@@ -56,6 +62,8 @@ export const App: React.FC = () => {
   const renderCurrentView = () => {
     switch (currentView) {
       case 'home': return <HomeView />;
+      case 'today': return <TodayView />;
+      case 'journal': return <JournalView />;
       case 'calendar': return <CalendarView />;
       case 'tasks': return <TasksView />;
       case 'goals': return <GoalsView />;
@@ -70,6 +78,8 @@ export const App: React.FC = () => {
       case 'communication': return <CommunicationArea />;
       case 'nutrition': return <NutritionArea />;
       case 'custom-area': return <CustomAreaView />;
+      case 'areas': return <AreasView />;
+      case 'archive': return <ArchiveView />;
       case 'settings': return <SettingsView />;
       default: return <HomeView />;
     }

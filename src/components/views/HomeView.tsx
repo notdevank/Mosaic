@@ -4,7 +4,10 @@ import { CheckSquare, BookOpen, ArrowRight, Repeat } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { getTodayStr } from '../../utils/dateUtils';
 
-function getTimeGreeting() {
+function getGreetingText(customGreeting?: string) {
+  if (customGreeting && customGreeting.trim()) {
+    return customGreeting.trim();
+  }
   const h = new Date().getHours();
   if (h >= 5 && h < 12) return 'Good Morning';
   if (h >= 12 && h < 17) return 'Good Afternoon';
@@ -59,7 +62,7 @@ export const HomeView: React.FC = () => {
         {/* Giant greeting */}
         <div>
           <h1 className="font-serif text-4xl md:text-5xl font-medium text-primary-text dark:text-primary-text-dark tracking-tight leading-[1.1]">
-            {getTimeGreeting()},
+            {getGreetingText(userSettings.greeting)},
           </h1>
           <h1 className="font-serif text-4xl md:text-5xl font-medium text-sage-600 dark:text-sage-400 tracking-tight leading-[1.1]">
             {userSettings.userName || 'Devank'}.
@@ -199,21 +202,29 @@ export const HomeView: React.FC = () => {
         </Section>
       )}
 
-      {/* ── DAILY LOG ── */}
+      {/* ── DAILY LOG REFLECTION ── */}
       <div
         onClick={() => setCurrentView('daily-log')}
-        className="group cursor-pointer rounded-xl border border-warm-border dark:border-warm-border-dark bg-warm-card dark:bg-warm-card-dark p-5 flex items-center justify-between transition-quiet hover:border-sage-500/40"
+        className="group cursor-pointer rounded-2xl border border-warm-border dark:border-warm-border-dark bg-warm-card dark:bg-warm-card-dark p-5 flex items-center justify-between transition-all duration-200 hover:border-sage-500/40 shadow-xs"
       >
-        <div className="space-y-1 min-w-0">
-          <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-sage-600 dark:text-sage-400">
-            <BookOpen className="w-3.5 h-3.5" />
-            Daily Log & Reflection
+        <div className="space-y-1.5 min-w-0 pr-4">
+          <div className="flex items-center gap-2 text-xs font-mono text-primary-secondary">
+            <BookOpen className="w-3.5 h-3.5 text-sage-500" />
+            <span className="font-medium">Daily Reflection</span>
+            {todayLog?.mood && (
+              <>
+                <span>•</span>
+                <span className="text-sage-600 dark:text-sage-400 font-semibold">Mood {todayLog.mood}/10</span>
+              </>
+            )}
           </div>
-          <p className="text-xs text-primary-secondary truncate max-w-md">
-            {todayLog?.freeformNote ? `"${todayLog.freeformNote}"` : 'Capture thoughts, wins, and reflections…'}
+          <p className="font-serif italic text-sm text-primary-text dark:text-zinc-200 line-clamp-2 leading-relaxed">
+            {todayLog?.freeformNote || 'Write your thoughts and reflections for today...'}
           </p>
         </div>
-        <ArrowRight className="w-4 h-4 text-sage-500 group-hover:translate-x-1 transition-transform shrink-0" />
+        <div className="w-8 h-8 rounded-full bg-warm-subtle dark:bg-warm-subtle-dark flex items-center justify-center group-hover:bg-sage-500 group-hover:text-white text-sage-600 transition-all shrink-0">
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+        </div>
       </div>
     </div>
   );

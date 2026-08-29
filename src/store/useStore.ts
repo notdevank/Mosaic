@@ -27,10 +27,14 @@ import {
   NutritionGoal,
   MuscleGroup,
   WeeklySplitDay,
+  JournalEntry,
+  ArchivedItem,
   SyncStatusType,
   SyncSettings
 } from '../types';
 import { syncEngine } from '../services/syncEngine';
+import { supabaseSync } from '../services/supabaseSync';
+import { parseNaturalLanguageTask } from '../utils/naturalLanguageTask';
 import { triggerMosaicCompletionEffect } from '../utils/mosaicEffects';
 import { 
   initialAreas, 
@@ -72,6 +76,8 @@ interface State {
   projects: Project[];
   activities: Activity[];
   dailyLogs: Record<string, DailyLog>; // Key: YYYY-MM-DD
+  journalEntries: JournalEntry[];
+  archivedItems: ArchivedItem[];
   inbox: InboxItem[];
   reviews: Review[];
 
@@ -85,7 +91,7 @@ interface State {
   workoutPlans: WorkoutPlan[];
   workoutLogs: WorkoutLog[];
   weeklySplit: WeeklySplitDay[];
-  updateWeeklySplitDay: (day: 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN', muscleGroup: MuscleGroup) => void;
+  updateWeeklySplitDay: (day: 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN', muscleGroup: MuscleGroup, customFocus?: string) => void;
 
   // Communication
   people: Person[];
@@ -104,9 +110,19 @@ interface State {
 
   // Task Actions
   addTask: (task: Omit<Task, 'id' | 'createdAt'>) => void;
+  parseAndAddTask: (input: string, options?: Partial<Task>) => void;
   updateTask: (id: string, updates: Partial<Task>) => void;
   toggleTaskStatus: (id: string) => void;
   deleteTask: (id: string) => void;
+
+  // Journal Actions
+  addJournalEntry: (entry: Omit<JournalEntry, 'id' | 'createdAt'>) => void;
+  updateJournalEntry: (id: string, updates: Partial<JournalEntry>) => void;
+  deleteJournalEntry: (id: string) => void;
+
+  // Archive Actions
+  archiveItem: (item: Omit<ArchivedItem, 'id' | 'archivedAt'>) => void;
+  restoreArchivedItem: (id: string) => void;
 
   // Event Actions
   addEvent: (event: Omit<CalendarEvent, 'id'>) => void;
@@ -156,6 +172,7 @@ interface State {
   addExercise: (exercise: Omit<Exercise, 'id'>) => void;
   addWorkoutPlan: (plan: Omit<WorkoutPlan, 'id'>) => void;
   recordWorkoutLog: (log: Omit<WorkoutLog, 'id'>) => void;
+  deleteWorkoutLog: (id: string) => void;
 
   // Communication Actions
   addPerson: (person: Omit<Person, 'id'>) => void;
@@ -204,6 +221,17 @@ export const useStore = create<State>()(
       projects: initialProjects,
       activities: initialActivities,
       dailyLogs: initialDailyLogs,
+      journalEntries: [
+        {
+          id: 'journal-welcome',
+          title: 'Welcome to Mosaic',
+          content: 'Mosaic is a calm, personal space designed to help you understand, organize, and reflect on your life. Write freely here whenever you wish.',
+          mood: 8,
+          tags: ['reflection', 'welcome'],
+          createdAt: new Date().toISOString()
+        }
+      ],
+      archivedItems: [],
       inbox: [],
       reviews: [],
       courses: initialCourses,
@@ -221,8 +249,8 @@ export const useStore = create<State>()(
         { day: 'SAT', muscleGroup: 'rest' },
         { day: 'SUN', muscleGroup: 'rest' },
       ],
-      updateWeeklySplitDay: (day, muscleGroup) => set((state) => ({
-        weeklySplit: (state.weeklySplit || []).map((s) => s.day === day ? { ...s, muscleGroup } : s)
+      updateWeeklySplitDay: (day, muscleGroup, customFocus) => set((state) => ({
+        weeklySplit: (state.weeklySplit || []).map((s) => s.day === day ? { ...s, muscleGroup, ...(customFocus !== undefined ? { customFocus } : {}) } : s)
       })),
       people: initialPeople,
       interactionLogs: [],
@@ -273,6 +301,59 @@ export const useStore = create<State>()(
         };
         return { tasks: [newTask, ...state.tasks] };
       }),
+
+      parseAndAddTask: (input, options) => set((state) => {
+        const parsed = parseNaturalLanguageTask(input);
+        const newTask: Task = {
+          id: `task-${Date.now()}`,
+          title: parsed.title,
+          dueDate: options?.dueDate || parsed.dueDate || getTodayStr(),
+          dueTime: options?.dueTime || parsed.dueTime,
+          priority: options?.priority || parsed.priority || 'medium',
+          status: 'todo',
+          subtasks: options?.subtasks || [],
+          areaId: options?.areaId,
+          projectId: options?.projectId,
+          description: options?.description,
+          createdAt: getTodayStr()
+        };
+        return { tasks: [newTask, ...state.tasks] };
+      }),
+
+      // Journal Handlers
+      addJournalEntry: (entryData) => set((state) => {
+        const newEntry: JournalEntry = {
+          ...entryData,
+          id: `journal-${Date.now()}`,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        return { journalEntries: [newEntry, ...(state.journalEntries || [])] };
+      }),
+
+      updateJournalEntry: (id, updates) => set((state) => ({
+        journalEntries: (state.journalEntries || []).map((j) =>
+          j.id === id ? { ...j, ...updates, updatedAt: new Date().toISOString() } : j
+        )
+      })),
+
+      deleteJournalEntry: (id) => set((state) => ({
+        journalEntries: (state.journalEntries || []).filter((j) => j.id !== id)
+      })),
+
+      // Archive Handlers
+      archiveItem: (itemData) => set((state) => {
+        const newItem: ArchivedItem = {
+          ...itemData,
+          id: `archive-${Date.now()}`,
+          archivedAt: new Date().toISOString()
+        };
+        return { archivedItems: [newItem, ...(state.archivedItems || [])] };
+      }),
+
+      restoreArchivedItem: (id) => set((state) => ({
+        archivedItems: (state.archivedItems || []).filter((item) => item.id !== id)
+      })),
 
       updateTask: (id, updates) => set((state) => ({
         tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t))
@@ -637,6 +718,10 @@ export const useStore = create<State>()(
           activities: [act, ...state.activities]
         };
       }),
+
+      deleteWorkoutLog: (id) => set((state) => ({
+        workoutLogs: state.workoutLogs.filter((w) => w.id !== id)
+      })),
 
       // Communication Actions
       addPerson: (personData) => set((state) => ({

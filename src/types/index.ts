@@ -153,6 +153,26 @@ export interface DailyLog {
   updatedAt: string;
 }
 
+export interface JournalEntry {
+  id: string;
+  title?: string;
+  content: string;
+  mood?: number;
+  tags?: string[];
+  areaId?: string;
+  createdAt: string; // ISO string
+  updatedAt?: string; // ISO string
+}
+
+export interface ArchivedItem {
+  id: string;
+  type: 'project' | 'area' | 'task' | 'goal' | 'journal';
+  title: string;
+  description?: string;
+  archivedAt: string;
+  originalData: any;
+}
+
 export interface InboxItem {
   id: string;
   content: string;
@@ -323,6 +343,7 @@ export type MuscleGroup = 'chest' | 'back' | 'legs' | 'shoulders' | 'arms' | 'ab
 export interface WeeklySplitDay {
   day: 'MON' | 'TUE' | 'WED' | 'THU' | 'FRI' | 'SAT' | 'SUN';
   muscleGroup: MuscleGroup;
+  customFocus?: string;
 }
 
 export interface NutritionGoal {
@@ -331,16 +352,13 @@ export interface NutritionGoal {
   targetDailyWaterLiters: number; // e.g. 3.0
 }
 
-export type SyncProvider = 'disabled' | 'local_folder' | 'remote_api' | 'gdrive';
+export type SyncProvider = 'disabled' | 'local_folder' | 'remote_api' | 'supabase';
 export type SyncStatusType = 'idle' | 'syncing' | 'synced' | 'error';
 
-export interface GoogleDriveSettings {
-  clientId?: string;
+export interface SupabaseSettings {
+  url?: string;
+  anonKey?: string;
   email?: string;
-  name?: string;
-  picture?: string;
-  accessToken?: string;
-  expiresAt?: number;
   lastSyncedAt?: string;
 }
 
@@ -351,7 +369,7 @@ export interface SyncSettings {
   secretToken?: string;
   autoSync: boolean;
   lastSyncedAt?: string;
-  googleDrive?: GoogleDriveSettings;
+  supabase?: SupabaseSettings;
 }
 
 export interface UserSettings {
@@ -374,6 +392,8 @@ export interface UserSettings {
 
 export type ViewType = 
   | 'home'
+  | 'today'
+  | 'journal'
   | 'calendar'
   | 'tasks'
   | 'goals'
@@ -388,4 +408,6 @@ export type ViewType =
   | 'communication'
   | 'nutrition'
   | 'custom-area'
+  | 'areas'
+  | 'archive'
   | 'settings';

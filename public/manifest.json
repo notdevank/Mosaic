@@ -1,0 +1,16 @@
+{
+  "short_name": "Mosaic",
+  "name": "Mosaic — Personal Life OS",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#F5F3EF",
+  "theme_color": "#68735C",
+  "display": "standalone",
+  "orientation": "portrait"
+}

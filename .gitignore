@@ -4,8 +4,9 @@ node_modules/
 # Build output
 dist/
 
-# Tauri (desktop-only, not part of web release)
-src-tauri/
+# Tauri Build Artifacts
+src-tauri/target/
+src-tauri/gen/
 
 # Environment
 .env

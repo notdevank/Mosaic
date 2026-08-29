@@ -1,6 +1,6 @@
 # Mosaic
 
-> A quiet, local-first Personal Life OS built for daily focus, tracking, and reflection.
+> A local-first Personal Life OS for planning, tracking, journaling, and reflection.
 
 ![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
@@ -9,15 +9,30 @@
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
----
+## Table of Contents
+- [Why Mosaic](#why-mosaic)
+- [Screenshots](#screenshots)
+- [Core Features](#core-features)
+- [Life Areas](#life-areas)
+- [Tech Stack](#tech-stack)
+- [Local-First Data Model](#local-first-data-model)
+- [Quick Start](#quick-start)
+- [Build and Package](#build-and-package)
+- [Optional Sync Server](#optional-sync-server)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Why Mosaic
+Mosaic brings your day-to-day system into one workspace: tasks, habits, goals, journal entries, reviews, calendar planning, and domain-specific life areas. It is designed to run well as a desktop app (Tauri) and in the browser, while keeping your data under your control.
 
 ## Screenshots
 
-| Home Dashboard | Journal & Markdown Studio |
+| Home Dashboard | Journal Studio |
 | :---: | :---: |
 | ![Dashboard](./public/screenshots/dashboard.png) | ![Journal](./public/screenshots/journal.png) |
 
-| Calendar View | Gym & Workout Studio |
+| Calendar View | Gym Studio |
 | :---: | :---: |
 | ![Calendar](./public/screenshots/calendar.png) | ![Gym](./public/screenshots/gym.png) |
 
@@ -25,104 +40,122 @@
 | :---: |
 | ![Heatmap](./public/screenshots/heatmap.png) |
 
----
-
-## Overview
-
-**Mosaic** consolidates daily planning, task execution, habit building, structured journaling, and specialized domain tracking into a unified local workspace. Designed with a quiet, tactile editorial aesthetic, all user data stays 100% local on your device.
-
----
-
-## Architecture & Storage
-
-- **100% Local-First**: Built with zero mandatory cloud dependencies.
-- **Desktop Storage**: SQLite engine (`sqlite:mosaic.db`) via Tauri v2 desktop runtime.
-- **Web & PWA Storage**: Reactive state persistence with IndexedDB and `localStorage`.
-- **Backup & Restore**: 1-click JSON snapshot export and import via Settings.
-- **Passcode Protection**: Optional 4-digit PIN lock screen.
-
----
-
 ## Core Features
+- **Home dashboard** with greeting, progress context, and daily focus.
+- **Today + Tasks** workflows for capture, prioritization, and execution.
+- **Journal studio** with write/read experience and mood-aware entries.
+- **Calendar views** for month/week/day planning.
+- **Habits + heatmap** for consistency tracking over time.
+- **Projects, goals, reviews, and archive** for longer planning loops.
+- **Quick capture + inbox** for low-friction thought collection.
+- **Passcode lock** and personalization from Settings.
+- **Backup/restore** using portable JSON snapshots.
 
-- 🌅 **Editorial Dashboard** — Live clock, waking-day progress indicator, customizable greeting, agenda preview, and daily reflection card.
-- 📓 **Journal Studio** — Write and Read mode tabs with real-time Markdown rendering (headings, bold, italics, task lists, blockquotes), reading time calculator, and mood tracking.
-- 🏋️ **Gym & Workout Studio** — Real-time workout logger with set completion checklists, weight (kg) and rep inputs, volume calculation, and a customizable 7-day Weekly Split table with custom focus notes.
-- 📋 **Task Management** — Priority tags, due dates, subtasks, and quick task capture.
-- 🗓️ **Calendar & Agenda** — Interactive month, week, and day views mapping tasks, events, and deadlines.
-- 🔁 **Habit Tracking** — Daily check-ins, streak calculations, and completion history.
-- 🟩 **Activity Heatmap** — 365-day contribution matrix tracking habits, study, workouts, and tasks.
-- 📥 **Inbox & Quick Capture** — Instant thought capture space (`Inbox`) to dump unprocessed ideas and convert them to tasks later.
-
----
-
-## Life Modules
-
-- 🎓 **Academics** — Course catalog, target GPA calculator, attendance counters, assignment deadlines, and study session timer.
-- 🏋️ **Gym & Fitness** — Workout logger, volume metrics, and customizable weekly training split schedule.
-- 🥗 **Diet & Nutrition** — Daily meal logging, macro distribution (Protein, Carbs, Fats), and hydration tracking.
-- 💬 **Communication** — Contact directory with relationship notes and follow-up reminders.
-
----
-
-## Cross-Platform Binaries
-
-Mosaic builds natively for desktop and web via Tauri v2 and GitHub Actions:
-
-- **macOS**: Universal Binary (`.dmg`, `.app`) for Apple Silicon and Intel.
-- **Windows**: 64-bit NSIS Setup (`.exe`) and `.msi` installers.
-- **Linux**: `.AppImage` and Debian `.deb` packages.
-- **Web App**: Production-optimized PWA bundle.
-
----
-
-## Download & Installation
-
-For regular users, download the pre-compiled installer for your operating system:
-
-| Platform | Download | Format |
-| :--- | :--- | :--- |
-| 🍏 **macOS** | [Download Universal `.dmg`](https://github.com/notdevank/Mosaic/releases/latest) | Apple Silicon & Intel Universal |
-| 🪟 **Windows** | [Download `.exe` Installer](https://github.com/notdevank/Mosaic/releases/latest) | 64-bit Installer |
-| 🐧 **Linux** | [Download `.AppImage` / `.deb`](https://github.com/notdevank/Mosaic/releases/latest) | AppImage & Debian Package |
-| 🏹 **Arch Linux** | Run `makepkg -si` using `PKGBUILD` | Arch Native Package (`pkg.tar.zst`) |
-| 📱 **Android** | Install PWA / Mobile Web App | Progressive Web App & APK |
-
----
+## Life Areas
+Mosaic includes built-in area modules and allows custom areas:
+- **Academics**
+- **Gym & Fitness**
+- **Nutrition**
+- **Communication**
+- **Custom Areas**
 
 ## Tech Stack
+- **Frontend:** React 18 + TypeScript + Vite
+- **Desktop Runtime:** Tauri v2 + Rust
+- **State Layer:** Zustand
+- **Desktop Persistence:** SQLite (`@tauri-apps/plugin-sql`)
+- **Web Persistence:** `localStorage` / IndexedDB-backed browser storage
+- **Styling:** Tailwind CSS
 
-- **Frontend**: React 18, TypeScript 5, Vite 5
-- **Desktop Runtime**: Tauri v2, Rust
-- **Styling**: Tailwind CSS 3 (Warm monochrome palette with sage green accents)
-- **State Management**: Zustand 4
-- **Icons**: Lucide React
+## Local-First Data Model
+- Desktop builds persist state in a local SQLite database (`sqlite:mosaic.db`) with localStorage mirroring for compatibility.
+- Web usage persists in browser storage.
+- Import/export support in Settings enables manual backups.
+- No cloud account is required for core usage.
 
----
+## Quick Start
 
-## Development Setup (For Contributors)
+### Prerequisites
+- Node.js 18+
+- npm 9+
+- Rust toolchain (required for Tauri desktop development/build)
+- Platform-specific Tauri system dependencies (Linux/macOS/Windows)
 
-If you wish to build from source or contribute to Mosaic:
-
+### 1) Install dependencies
 ```bash
-# Clone the repository
-git clone https://github.com/notdevank/Mosaic.git
-cd Mosaic
-
-# Install dependencies
 npm install
+```
 
-# Start web development server
+### 2) Run in web mode
+```bash
 npm run dev
+```
+Open `http://localhost:3000`.
 
-# Start Tauri desktop application
+### 3) Run as desktop app (Tauri)
+```bash
 npm run tauri:dev
 ```
 
-Open `http://localhost:3000` in your browser.
+## Build and Package
 
----
+### Web production build
+```bash
+npm run build:web
+```
+
+### Desktop production build
+```bash
+npm run tauri:build
+```
+
+### Platform helpers
+```bash
+npm run build:linux
+npm run build:windows
+npm run build:android
+```
+
+### Arch package
+```bash
+npm run arch:package
+```
+(Uses `PKGBUILD` at the repository root.)
+
+## Optional Sync Server
+A lightweight sync server exists at `server/sync-server.cjs`.
+
+Run it with:
+```bash
+node server/sync-server.cjs
+```
+
+Default endpoints:
+- `GET /health`
+- `GET/POST /api/sync`
+
+> Security note: set a strong `SECRET_TOKEN` before exposing the server beyond local/private networks.
+
+## Project Structure
+```text
+Mosaic
+├─ src/                 # React app source
+│  ├─ components/       # Views, areas, layout, shared UI
+│  ├─ store/            # Zustand state and seed data
+│  ├─ db/               # SQLite storage adapter
+│  └─ services/         # Sync and integration services
+├─ src-tauri/           # Rust/Tauri desktop runtime
+├─ public/              # Static assets and screenshots
+├─ server/              # Optional sync server
+└─ PKGBUILD             # Arch Linux packaging recipe
+```
+
+## Contributing
+1. Fork the repository.
+2. Create a feature branch.
+3. Make focused changes with clear commit messages.
+4. Validate locally (`npm run build`, and desktop flows if relevant).
+5. Open a pull request with a concise summary.
 
 ## License
-
-[MIT](LICENSE)
+[MIT](./LICENSE)

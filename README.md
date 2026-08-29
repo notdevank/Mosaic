@@ -12,17 +12,17 @@
 
 ## Screenshots
 
-| Home Dashboard | Calendar View |
+| Home Dashboard | Journal & Markdown Studio |
 | :---: | :---: |
-| ![Dashboard](./public/screenshots/dashboard.png) | ![Calendar](./public/screenshots/calendar.png) |
+| ![Dashboard](./public/screenshots/dashboard.png) | ![Journal](./public/screenshots/journal.png) |
 
-| Habit Tracker | Daily Log & Reflection |
+| Calendar View | Gym & Workout Studio |
 | :---: | :---: |
-| ![Habits](./public/screenshots/habits.png) | ![Daily Log](./public/screenshots/daily-log.png) |
+| ![Calendar](./public/screenshots/calendar.png) | ![Gym](./public/screenshots/gym.png) |
 
-| Settings & Security |
+| Activity Heatmap |
 | :---: |
-| ![Settings](./public/screenshots/settings.png) |
+| ![Heatmap](./public/screenshots/heatmap.png) |
 
 ---
 

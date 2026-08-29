@@ -78,7 +78,7 @@ jobs:
           tagName: v__VERSION__
           releaseName: 'Mosaic Life OS v__VERSION__'
           releaseBody: 'Automatic Release of Mosaic Life OS Desktop.'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
 

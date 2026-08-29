@@ -31,6 +31,5 @@ yarn-error.log*
 # Test output
 test-output.css
 
-# Arch packaging
-PKGBUILD
+# Arch packaging artifacts
 *.pkg.tar.*

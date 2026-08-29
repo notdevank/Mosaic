@@ -86,6 +86,7 @@ For regular users, download the pre-compiled installer for your operating system
 | 🪟 **Windows** | [Download `.exe` Installer](https://github.com/notdevank/Mosaic/releases/latest) | 64-bit Installer |
 | 🐧 **Linux** | [Download `.AppImage` / `.deb`](https://github.com/notdevank/Mosaic/releases/latest) | AppImage & Debian Package |
 | 🏹 **Arch Linux** | Run `makepkg -si` using `PKGBUILD` | Arch Native Package (`pkg.tar.zst`) |
+| 📱 **Android** | Install PWA / Mobile Web App | Progressive Web App & APK |
 
 ---
 

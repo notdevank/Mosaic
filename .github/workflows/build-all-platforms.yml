@@ -106,3 +106,37 @@ jobs:
         with:
           name: mosaic-web-dist
           path: dist/
+
+  # Job 3: Build Android Package (.apk)
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Setup Java 17 JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Rust Stable & Android Targets
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: 'aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android'
+
+      - name: Install Node Dependencies
+        run: npm ci
+
+      - name: Build Web Dist
+        run: npm run build:web
+

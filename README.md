@@ -1,6 +1,8 @@
 # Mosaic
 
-> A quiet, local-first Personal Life OS built for daily focus, tracking, and reflection.
+A local-first life workspace. Daily planning, tasks, habits, journaling, and domain tracking (academics, fitness, nutrition) in one calm, tactile app that never leaves your device.
+
+Your data is 100% local. No accounts, no mandatory cloud, no telemetry.
 
 ![React](https://img.shields.io/badge/React-18-blue?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
@@ -8,6 +10,12 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=flat-square&logo=tailwind-css)
 ![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+
+---
+
+## Why Mosaic
+
+Most productivity tools force a bad trade: spread your life across a dozen disconnected apps, or hand your data to someone else's server. Mosaic does neither. It's a single workspace that runs natively on desktop and web, with everything stored on your machine. The interface is intentionally quiet, a warm monochrome palette with sage accents, so the tool stays out of the way and the work stays front and center.
 
 ---
 
@@ -27,82 +35,64 @@
 
 ---
 
-## Overview
+## Features
 
-**Mosaic** consolidates daily planning, task execution, habit building, structured journaling, and specialized domain tracking into a unified local workspace. Designed with a quiet, tactile editorial aesthetic, all user data stays 100% local on your device.
+### Core workspace
+
+- **Editorial Dashboard** — Live clock, waking-day progress, customizable greeting, agenda preview, and a daily reflection card.
+- **Journal Studio** — Write and Read modes with live Markdown rendering, reading-time estimate, and mood tracking.
+- **Gym & Workout Studio** — Real-time set logging, weight and rep inputs, volume calculation, and a customizable 7-day split.
+- **Task Management** — Priority tags, due dates, subtasks, and quick capture.
+- **Calendar & Agenda** — Month, week, and day views that map tasks, events, and deadlines.
+- **Habit Tracking** — Daily check-ins, streaks, and completion history.
+- **Activity Heatmap** — A 365-day matrix across habits, study, workouts, and tasks.
+- **Inbox & Quick Capture** — Dump unprocessed thoughts, then convert them to tasks later.
+
+### Life modules
+
+- **Academics** — Course catalog, target GPA calculator, attendance counters, assignment deadlines, and a study session timer.
+- **Gym & Fitness** — Workout logger, volume metrics, and a weekly training split.
+- **Diet & Nutrition** — Meal logging, macro distribution (protein, carbs, fats), and hydration tracking.
+- **Communication** — Contact directory with relationship notes and follow-up reminders.
 
 ---
 
 ## Architecture & Storage
 
-- **100% Local-First**: Built with zero mandatory cloud dependencies.
-- **Desktop Storage**: SQLite engine (`sqlite:mosaic.db`) via Tauri v2 desktop runtime.
-- **Web & PWA Storage**: Reactive state persistence with IndexedDB and `localStorage`.
-- **Backup & Restore**: 1-click JSON snapshot export and import via Settings.
-- **Passcode Protection**: Optional 4-digit PIN lock screen.
+Mosaic is built local-first, with zero mandatory cloud dependencies.
+
+- **Desktop** — SQLite (`mosaic.db`) through the Tauri v2 runtime.
+- **Web & PWA** — Reactive state persisted with IndexedDB and `localStorage`.
+- **Backup & restore** — One-click JSON snapshot export and import from Settings.
+- **Passcode** — Optional 4-digit PIN lock screen.
 
 ---
 
-## Core Features
+## Download & Install
 
-- 🌅 **Editorial Dashboard** — Live clock, waking-day progress indicator, customizable greeting, agenda preview, and daily reflection card.
-- 📓 **Journal Studio** — Write and Read mode tabs with real-time Markdown rendering (headings, bold, italics, task lists, blockquotes), reading time calculator, and mood tracking.
-- 🏋️ **Gym & Workout Studio** — Real-time workout logger with set completion checklists, weight (kg) and rep inputs, volume calculation, and a customizable 7-day Weekly Split table with custom focus notes.
-- 📋 **Task Management** — Priority tags, due dates, subtasks, and quick task capture.
-- 🗓️ **Calendar & Agenda** — Interactive month, week, and day views mapping tasks, events, and deadlines.
-- 🔁 **Habit Tracking** — Daily check-ins, streak calculations, and completion history.
-- 🟩 **Activity Heatmap** — 365-day contribution matrix tracking habits, study, workouts, and tasks.
-- 📥 **Inbox & Quick Capture** — Instant thought capture space (`Inbox`) to dump unprocessed ideas and convert them to tasks later.
-
----
-
-## Life Modules
-
-- 🎓 **Academics** — Course catalog, target GPA calculator, attendance counters, assignment deadlines, and study session timer.
-- 🏋️ **Gym & Fitness** — Workout logger, volume metrics, and customizable weekly training split schedule.
-- 🥗 **Diet & Nutrition** — Daily meal logging, macro distribution (Protein, Carbs, Fats), and hydration tracking.
-- 💬 **Communication** — Contact directory with relationship notes and follow-up reminders.
-
----
-
-## Cross-Platform Binaries
-
-Mosaic builds natively for desktop and web via Tauri v2 and GitHub Actions:
-
-- **macOS**: Universal Binary (`.dmg`, `.app`) for Apple Silicon and Intel.
-- **Windows**: 64-bit NSIS Setup (`.exe`) and `.msi` installers.
-- **Linux**: `.AppImage` and Debian `.deb` packages.
-- **Web App**: Production-optimized PWA bundle.
-
----
-
-## Download & Installation
-
-For regular users, download the pre-compiled installer for your operating system:
+Grab a prebuilt binary for your platform:
 
 | Platform | Download | Format |
 | :--- | :--- | :--- |
-| 🍏 **macOS** | [Download Universal `.dmg`](https://github.com/notdevank/Mosaic/releases/latest) | Apple Silicon & Intel Universal |
-| 🪟 **Windows** | [Download `.exe` Installer](https://github.com/notdevank/Mosaic/releases/latest) | 64-bit Installer |
-| 🐧 **Linux** | [Download `.AppImage` / `.deb`](https://github.com/notdevank/Mosaic/releases/latest) | AppImage & Debian Package |
-| 🏹 **Arch Linux** | Run `makepkg -si` using `PKGBUILD` | Arch Native Package (`pkg.tar.zst`) |
-| 📱 **Android** | Install PWA / Mobile Web App | Progressive Web App & APK |
+| macOS | [Universal .dmg](https://github.com/notdevank/Mosaic/releases/latest) | Apple Silicon & Intel |
+| Windows | [.exe installer](https://github.com/notdevank/Mosaic/releases/latest) | 64-bit |
+| Linux | [.AppImage / .deb](https://github.com/notdevank/Mosaic/releases/latest) | AppImage & Debian |
+| Arch Linux | `makepkg -si` via `PKGBUILD` | `pkg.tar.zst` |
+| Android / Mobile | PWA / APK | Progressive Web App & APK |
 
 ---
 
 ## Tech Stack
 
 - **Frontend**: React 18, TypeScript 5, Vite 5
-- **Desktop Runtime**: Tauri v2, Rust
-- **Styling**: Tailwind CSS 3 (Warm monochrome palette with sage green accents)
-- **State Management**: Zustand 4
+- **Desktop**: Tauri v2 (Rust)
+- **Styling**: Tailwind CSS 3 (warm monochrome + sage accents)
+- **State**: Zustand 4
 - **Icons**: Lucide React
 
 ---
 
-## Development Setup (For Contributors)
-
-If you wish to build from source or contribute to Mosaic:
+## Development
 
 ```bash
 # Clone the repository
@@ -112,14 +102,14 @@ cd Mosaic
 # Install dependencies
 npm install
 
-# Start web development server
+# Start the web dev server
 npm run dev
 
-# Start Tauri desktop application
+# Start the Tauri desktop app
 npm run tauri:dev
 ```
 
-Open `http://localhost:3000` in your browser.
+The web app runs at `http://localhost:3000`.
 
 ---
 

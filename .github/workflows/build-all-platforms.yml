@@ -156,11 +156,10 @@ jobs:
           $BUILD_TOOLS/apksigner sign --ks debug.keystore --ks-pass pass:android --key-pass pass:android --out Mosaic-${{ github.ref_name }}-android-signed.apk "$UNSIGNED_APK"
 
       - name: Upload Signed Android APK to GitHub Release
-        uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
-        with:
-          files: Mosaic-${{ github.ref_name }}-android-signed.apk
-          tag_name: ${{ github.ref_name }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} Mosaic-${{ github.ref_name }}-android-signed.apk --clobber
 
 
